@@ -110,21 +110,44 @@ if n - nu > 0:
     print("varphiLimInf = ", varphiLimInf)
     print("varphiLim0 = ", varphiLim0)
 
+    def phi(s):
+        return vv + vvbary + alphaMVISO(s)
+
+
+    #print("phi(", (Xinf + X0) / 2, ")=", phi(np.array([(Xinf + X0) / 2])))
+
+    #print("phi(Xinf)=", phi(Xinf))
+    #print("phi(1000)=", phi(np.array([1000.0])))
+    #print("phi(X0)=", phi(X0))
+    #print("phi(0.00000000001)=", phi(np.array([0.00000000001])))  # 10^-11
+    #print("phi(0.0000000001)=", phi(np.array([0.0000000001])))  # 10^-10
+    # print("phi(0.000000000001)=", phi(np.array([0.000000000001]))) #10^-12
+
+
+    # print("****", alphaMVISO(10**(-3+np.array([-0.2000,-0.1000,-0.0000,0.1000,0.2000]))))
+    # print("----", phi(10**(-3+np.array([-0.2000,-0.1000,-0.0000,0.1000,0.2000]))))
+
+
     ###############################################
     ##### Minimization interval determination #####
     ###############################################
-    #print(radii)
-    #print(10**(-3+np.array([-3.2000,-3.1000,-3.0000,-2.9000,-2.8000])))
 
-    def phi(s):
-        return vv+vvbary+alphaMVISO(s)
+    ##### Extremo inferior #####
+    einf = -3
+    dir = -1
+    iter = 0
+    #print("s antes de alpha = ", (10**(-3 + np.array([-0.2,-0.1,0.0,0.1,0.2]))))
+    #print("alphaMVISO", alphaMVISO(10 ** (-3 + np.array([-0.2, -0.1, 0.0, 0.1, 0.2]))))
+    #print("vbary", vbary)
+    #print("eval = ", eval)
 
-    print("phi(",(Xinf+X0)/2,")=",phi(np.array([(Xinf+X0)/2])))
+    while iter < 100 and dir != 0:
+        iter += 1
+        eval = abs(
+                    vv + vvbary + alphaMVISO(10 ** (-3 + np.array([-0.2, -0.1, 0.0, 0.1, 0.2]))) - varphiLim0) / varphiLim0
+        izq = sum(eval[0:3])  # mejor hasta 2 ([0:2]) y luego eval[3]+eval[4] ??
 
-    print("phi(Xinf)=", phi(Xinf))
-    print("phi(1000)=", phi(np.array([1000.0])))
-    print("phi(X0)=",phi(X0))
-    print("phi(0.00000000001)=",phi(np.array([0.00000000001]))) # 10 ceros
-    print("phi(0.0000000001)=", phi(np.array([0.0000000001]))) # 9 ceros
-    #print("****", alphaMVISO(10**(-3+np.array([-0.2000,-0.1000,-0.0000,0.1000,0.2000]))))
-    #print("----", phi(10**(-3+np.array([-0.2000,-0.1000,-0.0000,0.1000,0.2000]))))
+
+
+
+

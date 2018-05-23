@@ -13,4 +13,7 @@ import numpy as np
 
 
 def vISO(x, s):
+    #print("arctan(outer(x, s)) = ", np.arctan(np.outer(x, s)))
+    #print("outer(x, s) = ", np.outer(x, s))
+    # Para s = 10^-12, arctan(outer(x,s)) = outer(x,s)
     return np.sqrt(4 * np.pi * (np.outer(x, s) - np.arctan(np.outer(x, s))) / np.outer(x, np.ones(len(s))))

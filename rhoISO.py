@@ -15,7 +15,10 @@ import scipy.optimize as op
 
 def rhoISO(s):
     aux = 0 * s
+    #print("s = ", s)
+    #print("radii = ", radii)
     vHalos = vISO(radii, s)
+    #print("vHalos = ", vHalos) # Para s = 10^-12, vHalos = 0
     rhs = WeighProd(vHalos, vHalos, weights)  # rhs Eq  # 19 and #20 up to multiplicative constant 1/(s^3 CteDim) .
     #print("RHS = ", rhs)
     rhoVbaryNull = CteDim * (s ** 3) * (WeighProd(np.dot(np.atleast_2d(vrot).T, np.atleast_2d(np.ones(len(s)))),
@@ -48,7 +51,7 @@ def rhoISO(s):
         #print("LHS = ", lhs)
         rango = np.where(rhs < lhs)
         #print("RANGO = ", rango)
-        for i in rango[0]:
+        for i in rango[0]:      ## Intentar VECTORIZAR
             #print(i)
             #print(vHalos)
             #print(vHalos[:, i])
