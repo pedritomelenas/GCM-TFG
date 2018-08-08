@@ -1,9 +1,11 @@
+import random
 import arff
 import numpy as np
 import scipy.optimize as op
 from data import radii, vrot, errs, vbary, n, nu, weights, CteDim, totalnullvbary, somenullvbary
 from WeighProd import WeighProd
 from alphaMVISO import alphaMVISO
+from collections import deque
 
 
 #####################________ REVISAR PRECISIÓN __________######################
@@ -95,6 +97,7 @@ if n - nu > 0:
             X0 = op.fsolve(eqVLim0, XVbaryNull0 / 2)  # Solves equation #38 --> #40
 
     print("Xinf = ", Xinf)
+    print("typeXinf = ", type(Xinf))
     print("X0 = ", X0)
 
     ## Calculation of the limit value by using Lemma 2.1 and development #16 ##
@@ -113,10 +116,9 @@ if n - nu > 0:
     def phi(s):
         return vv + vvbary + alphaMVISO(s)
 
-
     #print("phi(", (Xinf + X0) / 2, ")=", phi(np.array([(Xinf + X0) / 2])))
-
-    #print("phi(Xinf)=", phi(Xinf))
+    print("Xinf = ", Xinf)
+    print("phi(Xinf)=", phi(Xinf))
     #print("phi(1000)=", phi(np.array([1000.0])))
     #print("phi(X0)=", phi(X0))
     #print("phi(0.00000000001)=", phi(np.array([0.00000000001])))  # 10^-11
@@ -133,21 +135,33 @@ if n - nu > 0:
     ###############################################
 
     ##### Extremo inferior #####
-    einf = -3
-    dir = -1
-    iter = 0
+    #einf = -3
+    #dir = -1
+    #iter = 0
     #print("s antes de alpha = ", (10**(-3 + np.array([-0.2,-0.1,0.0,0.1,0.2]))))
     #print("alphaMVISO", alphaMVISO(10 ** (-3 + np.array([-0.2, -0.1, 0.0, 0.1, 0.2]))))
     #print("vbary", vbary)
     #print("eval = ", eval)
 
-    while iter < 100 and dir != 0:
-        iter += 1
-        eval = abs(
-                    vv + vvbary + alphaMVISO(10 ** (-3 + np.array([-0.2, -0.1, 0.0, 0.1, 0.2]))) - varphiLim0) / varphiLim0
-        izq = sum(eval[0:3])  # mejor hasta 2 ([0:2]) y luego eval[3]+eval[4] ??
+    #while iter < 100 and dir != 0:
+     #   iter += 1
+      #  eval = abs(
+       #             vv + vvbary + alphaMVISO(10 ** (-3 + np.array([-0.2, -0.1, 0.0, 0.1, 0.2]))) - varphiLim0) / varphiLim0
+        #izq = sum(eval[0:3])  # mejor hasta 2 ([0:2]) y luego eval[3]+eval[4] ??
 
 
+    ###############################################
+    ############### Tabu Search ###################
+    ###############################################
 
+    s0 = random.uniform(0, 10**3)   # solución inicial aleatoria
+    Nv = 5  # mínimo número de soluciones en la vecindad actual
+    Nmin = 10   # mínimo número de soluciones en la lista tabú
+    Nmax = 100  # número máximo de soluciones en la lista tabú
+    K = 15000   # máximo número de iteraciones
+    e = 10**(-3)    # umbral de precisión
+    M = 10  # máximo número de soluciones encontradas
+    N = 30  # máximo número de iteraciones sin que la solución óptima cambie
 
-
+    tabulist = deque()
+    #print(tabulist)
