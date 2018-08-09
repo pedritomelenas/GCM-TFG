@@ -59,10 +59,10 @@ if n - nu > 0:
 
     # The solution to #34 --> #35 with vbary=0, which is an upper bound for the solutions to #34 --> #35
     XVbaryNullinf = (WeighProd(vrot, np.sqrt(ginf(radii)), weights) / WeighProd(ginf(radii), vones, weights)) ** 2
-
+    print("XVbaryNullinf = ", XVbaryNullinf)
     # The solution to #40 is an upper bound for the solutions to #40
     XVbaryNull0 = (WeighProd(vrot, np.sqrt(g0(radii)), weights) / WeighProd(g0(radii), vones, weights)) ** 2
-
+    print("XVbaryNull0 = ", XVbaryNull0)
     # print(XVbaryNullinf)
     # print(XVbaryNull0)
 
@@ -70,7 +70,7 @@ if n - nu > 0:
         # print("if")
         Xinf = XVbaryNullinf
         X0 = XVbaryNull0
-    elif somenullvbary:
+    elif somenullvbary: ####################################################################### NO ENTIENDO ESTE CASO ##########
         # print(round(np.prod(vbary)) == 0)
         jinf = -3
         # print(eqVLimInf(10 ** (j) * XVbaryNullinf))
@@ -87,19 +87,38 @@ if n - nu > 0:
         # X = fzero(equationVLimInf, [10 ^ (j) * XVbaryNull, XVbaryNull]); # Solves equation  # 34 --> #35
 
     else:
-        if eqVLimInf(0) >= 0:
+        if eqVLimInf(0) >= 0:   # >= ? #########################################################################################
             Xinf = 0
         else:
-            Xinf = op.fsolve(eqVLimInf, XVbaryNullinf / 2)  # Solves equation #38 --> #40
+            Xinf = op.fsolve(eqVLimInf, XVbaryNullinf / 2)  # Solves equation --> #35
         if eqVLim0(0) >= 0:
             X0 = 0
         else:
             X0 = op.fsolve(eqVLim0, XVbaryNull0 / 2)  # Solves equation #38 --> #40
 
+    ##### Xinf y X0 calculado con brentq y con f solve. ################################################################
+    ##### En el caso de somenullvbary, ¿por qué usar brentq y no fsolve?
+    ##### (brentq es ESCALAR, fsolve es MULTIDIMENSIONAL)
+    ##### brentq devuelve UNa RAÍZ de f, fsolve devuelve LAS RAÍCES de f
+
+    jinf = -3
+    while eqVLimInf(10 ** jinf * XVbaryNullinf) > 0:
+        jinf -= 1
+    print("Xinf with brentq = ", op.brentq(eqVLimInf, 10 ** jinf * XVbaryNullinf, XVbaryNullinf))
+    print("Xinf with fsolve = ", op.fsolve(eqVLimInf, XVbaryNullinf / 2))
+    j0 = -3
+    while eqVLim0(10 ** j0 * XVbaryNull0) > 0:
+        j0 -= 1
+    print("X0 with brentq = ", op.brentq(eqVLim0, 10 ** j0 * XVbaryNull0, XVbaryNull0))
+    print("X0 with fsolve = ", op.fsolve(eqVLim0, XVbaryNull0 / 2))
+
+    ####################################################################################################################
+
+    '''
     print("Xinf = ", Xinf)
     print("typeXinf = ", type(Xinf))
     print("X0 = ", X0)
-
+    '''
     ## Calculation of the limit value by using Lemma 2.1 and development #16 ##
     varphiLimInf = vv + vvbary - 2 * WeighProd(vrot, np.sqrt(Xinf * ginf(radii) + (vbary ** 2)), weights) + \
                    Xinf * WeighProd(ginf(radii), vones, weights)
@@ -110,25 +129,26 @@ if n - nu > 0:
     varphiLim0 = vv + vvbary + X0 * WeighProd(g0(radii), vones, weights) \
                  - 2 * WeighProd(vrot, np.sqrt(X0 * g0(radii) + (vbary ** 2)), weights)
 
-    print("varphiLimInf = ", varphiLimInf)
-    print("varphiLim0 = ", varphiLim0)
+    #print("varphiLimInf = ", varphiLimInf)
+    #print("varphiLim0 = ", varphiLim0)
 
     def phi(s):
         return vv + vvbary + alphaMVISO(s)
 
-    #print("phi(", (Xinf + X0) / 2, ")=", phi(np.array([(Xinf + X0) / 2])))
+    '''
+    print("phi(", (Xinf + X0) / 2, ")=", phi(np.array([(Xinf + X0) / 2])))
     print("Xinf = ", Xinf)
     print("phi(Xinf)=", phi(Xinf))
-    #print("phi(1000)=", phi(np.array([1000.0])))
-    #print("phi(X0)=", phi(X0))
-    #print("phi(0.00000000001)=", phi(np.array([0.00000000001])))  # 10^-11
-    #print("phi(0.0000000001)=", phi(np.array([0.0000000001])))  # 10^-10
+    print("phi(1000)=", phi(np.array([1000.0])))
+    print("phi(X0)=", phi(X0))
+    print("phi(0.00000000001)=", phi(np.array([0.00000000001])))  # 10^-11
+    print("phi(0.00331078)=", phi(np.array([0.00331078])))  #
     # print("phi(0.000000000001)=", phi(np.array([0.000000000001]))) #10^-12
 
 
     # print("****", alphaMVISO(10**(-3+np.array([-0.2000,-0.1000,-0.0000,0.1000,0.2000]))))
     # print("----", phi(10**(-3+np.array([-0.2000,-0.1000,-0.0000,0.1000,0.2000]))))
-
+    '''
 
     ###############################################
     ##### Minimization interval determination #####
@@ -153,7 +173,7 @@ if n - nu > 0:
     ###############################################
     ############### Tabu Search ###################
     ###############################################
-
+    ''''
     s0 = random.uniform(0, 10**3)   # solución inicial aleatoria
     Nv = 5  # mínimo número de soluciones en la vecindad actual
     Nmin = 10   # mínimo número de soluciones en la lista tabú
@@ -164,4 +184,4 @@ if n - nu > 0:
     N = 30  # máximo número de iteraciones sin que la solución óptima cambie
 
     tabulist = deque()
-    #print(tabulist)
+    #print(tabulist)'''
