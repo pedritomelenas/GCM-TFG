@@ -84,7 +84,7 @@ def alphaMV(s, model):
     if model == 'ISO':
         rhoaux = rho(s, 'ISO')
         vaux = v(radii, s, 'ISO')
-    elif model == 'BUR'
+    elif model == 'BUR':
         rhoaux = rho(s, 'BUR')
         vaux = v(radii, s, 'BUR')
     elif model == 'NFW':
