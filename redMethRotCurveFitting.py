@@ -37,12 +37,14 @@ for i in dt.galaxlist:
     galaxdata["vbary"] = vbary
     #print("  Vbariónica = ", vbary)
     n = len(radii)
+    galaxdata["vones"] = np.ones(n)
     weights = 1 / ((n - dt.nu) * dt.galaxies[i]["errs"] ** 2)
     galaxdata["weights"] = weights
     totalnullvbary = np.sum(vbary) == 0
     galaxdata["totalnullvbary"] = totalnullvbary
     somenullvbary = round(np.prod(vbary)) == 0
     galaxdata["somenullvbary"] = somenullvbary
+
 
     #print(galaxdata)
 
@@ -69,10 +71,10 @@ for i in dt.galaxlist:
             jinf = -3
             # print(eqVLimInf(10 ** (j) * XVbaryNullinf))
             # print(eqVLim0(10 ** jinf * XVbaryNullinf))
-            while cf.eqVLimInf(10 ** jinf * XVbaryNullinf, galaxdata) > 0:
+            while cf.eqVLimInf(10 ** jinf * XVbaryNullinf, ginf, galaxdata) > 0:
                 jinf -= 1
             j0 = -3
-            while cf.eqVLim0(10 ** j0 * XVbaryNull0, galaxdata) > 0:
+            while cf.eqVLim0(10 ** j0 * XVbaryNull0, g0, galaxdata) > 0:
                 j0 -= 1
             Xinf = op.brentq(cf.eqVLimInf, 10 ** jinf * XVbaryNullinf, XVbaryNullinf)  # Brent's Method (escalar)
             # Xinf = op.fsolve(eqVLimInf, (10 ** jinf * XVbaryNullinf + XVbaryNullinf) / 2)
@@ -81,14 +83,14 @@ for i in dt.galaxlist:
             # X = fzero(equationVLimInf, [10 ^ (j) * XVbaryNull, XVbaryNull]); # Solves equation  # 34 --> #35
 
         else:
-            if cf.eqVLimInf(0, galaxdata) >= 0:   # >= ? #########################################################################################
+            if cf.eqVLimInf(0, ginf, galaxdata) >= 0:   # >= ? #########################################################################################
                 Xinf = 0
             else:
-                Xinf = op.fsolve(cf.eqVLimInf, XVbaryNullinf / 2)  # Solves equation --> #35
-            if cf.eqVLim0(0, galaxdata) >= 0:
+                Xinf = op.fsolve(cf.eqVLimInf, XVbaryNullinf / 2, (ginf, galaxdata))  # Solves equation --> #35
+            if cf.eqVLim0(0, g0, galaxdata) >= 0:
                 X0 = 0
             else:
-                X0 = op.fsolve(cf.eqVLim0, XVbaryNull0 / 2)  # Solves equation #38 --> #40
+                X0 = op.fsolve(cf.eqVLim0, XVbaryNull0 / 2, (g0, galaxdata))  # Solves equation #38 --> #40
 
         ## Calculation of the limit value by using Lemma 2.1 and development #16 ##
         varphiLimInf = vv + vvbary - 2 * cf.WeighProd(vrot, np.sqrt(Xinf * ginf + (vbary ** 2)), weights) + \
@@ -100,8 +102,13 @@ for i in dt.galaxlist:
         varphiLim0 = vv + vvbary + X0 * cf.WeighProd(g0, vones, weights) \
                      - 2 * cf.WeighProd(vrot, np.sqrt(X0 * g0 + (vbary ** 2)), weights)
 
+    print("Xinf = ", Xinf)
+    print("X0 = ", X0)
+    print("varphiLimInf", varphiLimInf)
+    print("varphiLim0", varphiLim0)
 
 
+'''
 # print(WeighProd(np.array([1,2,3]), np.array([1,2,3]), np.array([1,1,1])))
 radii = dt.galaxies["DDO101"]["R"]
 vrot = dt.galaxies["DDO101"]["vrot"]
@@ -209,11 +216,6 @@ if n - dt.nu > 0:
 
     ####################################################################################################################
 
-    '''
-    print("Xinf = ", Xinf)
-    print("typeXinf = ", type(Xinf))
-    print("X0 = ", X0)
-    '''
     ## Calculation of the limit value by using Lemma 2.1 and development #16 ##
     varphiLimInf = vv + vvbary - 2 * WeighProd(vrot, np.sqrt(Xinf * ginf(radii) + (vbary ** 2)), weights) + \
                    Xinf * WeighProd(ginf(radii), vones, weights)
@@ -228,7 +230,7 @@ if n - dt.nu > 0:
     #print("varphiLim0 = ", varphiLim0)
 
 
-    '''
+
     print("phi(", (Xinf + X0) / 2, ")=", phi(np.array([(Xinf + X0) / 2])))
     print("Xinf = ", Xinf)
     print("phi(Xinf)=", phi(Xinf))
@@ -241,7 +243,7 @@ if n - dt.nu > 0:
 
     # print("****", alphaMVISO(10**(-3+np.array([-0.2000,-0.1000,-0.0000,0.1000,0.2000]))))
     # print("----", phi(10**(-3+np.array([-0.2000,-0.1000,-0.0000,0.1000,0.2000]))))
-    '''
+
 
     ###############################################
     ##### Minimization interval determination #####
@@ -266,7 +268,7 @@ if n - dt.nu > 0:
     ###############################################
     ############### Tabu Search ###################
     ###############################################
-    ''''
+
     s0 = random.uniform(0, 10**3)   # solución inicial aleatoria
     Nv = 5  # mínimo número de soluciones en la vecindad actual
     Nmin = 10   # mínimo número de soluciones en la lista tabú
@@ -277,4 +279,5 @@ if n - dt.nu > 0:
     N = 30  # máximo número de iteraciones sin que la solución óptima cambie
 
     tabulist = deque()
-    #print(tabulist)'''
+    #print(tabulist)
+'''

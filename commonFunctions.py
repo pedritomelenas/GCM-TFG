@@ -14,10 +14,9 @@ def ginf(x, model):
         ginf = x**(-1)
     return ginf
 
-def eqVLimInf(t, galaxdata):
-    return WeighProd(ginf(galaxdata["radii"]), galaxdata["vones"], galaxdata["weights"]) - \
-           WeighProd(galaxdata["vrot"], (ginf(galaxdata["radii"]) / np.sqrt(t * ginf(galaxdata["radii"]) +
-                                                                            galaxdata["vbary"] ** 2)), galaxdata["weights"])
+def eqVLimInf(t, ginf, galaxdata):
+    return WeighProd(ginf, galaxdata["vones"], galaxdata["weights"]) - \
+           WeighProd(galaxdata["vrot"], (ginf / np.sqrt(t * ginf + galaxdata["vbary"] ** 2)), galaxdata["weights"])
 
 def g0(x, model):
     if model == 'NFW':
@@ -27,11 +26,10 @@ def g0(x, model):
     return g0
 
 
-def eqVLim0(t, galaxdata):
+def eqVLim0(t, g0, galaxdata):
     # WeighProd(g0(radii),vones,weights) - WeighProd(vrot,g0(radii)./sqrt(t.*g0(radii)+(vbary.^2)),weights)
-    return WeighProd(g0(galaxdata["radii"]), galaxdata["vones"], galaxdata["weights"]) - \
-           WeighProd(galaxdata["vrot"], g0(galaxdata["radii"]) / np.sqrt(t * g0(galaxdata["radii"]) +
-                                                                         galaxdata["vbary"] ** 2), galaxdata["weights"])
+    return WeighProd(g0, galaxdata["vones"], galaxdata["weights"]) - \
+           WeighProd(galaxdata["vrot"], g0 / np.sqrt(t * g0 + galaxdata["vbary"] ** 2), galaxdata["weights"])
 
 def v(x, s, model):
     if model == 'ISO':
