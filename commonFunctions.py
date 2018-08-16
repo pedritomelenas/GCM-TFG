@@ -1,5 +1,5 @@
 import numpy as np
-from data import radii, weights, CteDim, totalnullvbary, somenullvbary, vbary, vrot
+#from data import radii, weights, CteDim, totalnullvbary, somenullvbary, vbary, vrot
 import scipy.optimize as op
 
 def WeighProd(x, y, sigmas):
@@ -14,12 +14,24 @@ def ginf(x, model):
         ginf = x**(-1)
     return ginf
 
+def eqVLimInf(t, galaxdata):
+    return WeighProd(ginf(galaxdata["radii"]), galaxdata["vones"], galaxdata["weights"]) - \
+           WeighProd(galaxdata["vrot"], (ginf(galaxdata["radii"]) / np.sqrt(t * ginf(galaxdata["radii"]) +
+                                                                            galaxdata["vbary"] ** 2)), galaxdata["weights"])
+
 def g0(x, model):
     if model == 'NFW':
         g0 = x
     elif model == 'BUR' or model == 'ISO':
         g0 = x**2
     return g0
+
+
+def eqVLim0(t, galaxdata):
+    # WeighProd(g0(radii),vones,weights) - WeighProd(vrot,g0(radii)./sqrt(t.*g0(radii)+(vbary.^2)),weights)
+    return WeighProd(g0(galaxdata["radii"]), galaxdata["vones"], galaxdata["weights"]) - \
+           WeighProd(galaxdata["vrot"], g0(galaxdata["radii"]) / np.sqrt(t * g0(galaxdata["radii"]) +
+                                                                         galaxdata["vbary"] ** 2), galaxdata["weights"])
 
 def v(x, s, model):
     if model == 'ISO':
@@ -35,36 +47,37 @@ def v(x, s, model):
         # aux = sqrt(4 * pi * (log(1 + x * s). / (x * ones(size(s))) - (ones(size(x)) * s). / (1 + x * s)));
     return v
 
-def rho(s, model):
+def rho(s, model, galaxdata):
     aux = 0 * s
     if model == 'ISO':
-        vHalos = v(radii, s, 'ISO')
+        vHalos = v(galaxdata["radii"], s, 'ISO')
     elif model == 'BUR':
-        vHalos = v(radii, s, 'BUR')
+        vHalos = v(galaxdata["radii"], s, 'BUR')
     elif model == 'NFW':
-        vHalos = v(radii, s, 'NFW')
+        vHalos = v(galaxdata["radii"], s, 'NFW')
     # print("vHalos = ", vHalos) # Para s = 10^-12, vHalos = 0
-    rhs = WeighProd(vHalos, vHalos, weights)  # rhs Eq  # 19 and #20 up to multiplicative constant 1/(s^3 CteDim) .
+    rhs = WeighProd(vHalos, vHalos, galaxdata["weights"])  # rhs Eq  # 19 and #20 up to multiplicative constant 1/(s^3 CteDim) .
     # print("RHS = ", rhs)
-    rhoVbaryNull = CteDim * (s ** 3) * (WeighProd(np.dot(np.atleast_2d(vrot).T, np.atleast_2d(np.ones(len(s)))),
-                                                  vHalos, weights) / rhs) ** 2  # Eq #21
-    if totalnullvbary:
+    rhoVbaryNull = galaxdata["CteDim"] * (s ** 3) * (WeighProd(np.dot(np.atleast_2d(galaxdata["vrot"]).T,
+                                                                      np.atleast_2d(np.ones(len(s)))),
+                                                               vHalos, galaxdata["weights"]) / rhs) ** 2  # Eq #21
+    if galaxdata["totalnullvbary"]:
         aux = rhoVbaryNull
-    elif somenullvbary:
+    elif galaxdata["somenullvbary"]:
         rango = np.nonzero(rhs)
         for i in rango:
             def rhoequation(t):
-                return rhs[i] - WeighProd(vrot, (vHalos[:][i] ** 2) / np.sqrt(t *
-                                            (vHalos[:][i] ** 2) / ((s[i] ** 3) * CteDim) +
-                                                                                   (vbary ** 2)), weights)
+                return rhs[i] - WeighProd(galaxdata["vrot"], (vHalos[:][i] ** 2) / np.sqrt(t *
+                                            (vHalos[:][i] ** 2) / ((s[i] ** 3) * galaxdata["CteDim"]) +
+                                                                                   (galaxdata["vbary"] ** 2)), galaxdata["weights"])
             j = -3
             while rhoequation((10 ** j) * rhoVbaryNull[i]) > 0:
                 j -= 1
             aux[i] = op.fsolve(rhoequation, ((10 ** j) * rhoVbaryNull[i] + rhoVbaryNull[i]) / 2) ## MIRAR MULTIDIMENSIONAL
 
     else:
-        lhs = WeighProd(np.dot(np.atleast_2d(vrot).T, np.atleast_2d(np.ones(len(s)))), (vHalos ** 2) /
-                        (np.dot(np.atleast_2d(vbary).T, np.atleast_2d(np.ones(len(s))))), weights)
+        lhs = WeighProd(np.dot(np.atleast_2d(galaxdata["vrot"]).T, np.atleast_2d(np.ones(len(s)))), (vHalos ** 2) /
+                        (np.dot(np.atleast_2d(galaxdata["vbary"]).T, np.atleast_2d(np.ones(len(s))))), galaxdata["weights"])
         #print("LHS = ", lhs)
         rango = np.where(rhs < lhs)
         #print("RANGO = ", rango)
@@ -75,27 +88,29 @@ def rho(s, model):
             #print(rhs[i])
             #print(s[i])
             def rhoequation(t):
-                return rhs[i] - WeighProd(vrot, (np.square(vHalos[:, i])) / np.sqrt(t * np.square((vHalos[:, i])) / ((s[i] ** 3) * CteDim) +
-                                                                                   np.square(vbary)), weights)
+                return rhs[i] - WeighProd(galaxdata["vrot"], (np.square(vHalos[:, i])) /
+                                          np.sqrt(t * np.square((vHalos[:, i])) / ((s[i] ** 3) * galaxdata["CteDim"]) +
+                                                                np.square(galaxdata["vbary"])), galaxdata["weights"])
             aux[i] = op.fsolve(rhoequation, rhoVbaryNull[i] / 2)
     return aux
 
-def alphaMV(s, model):
+def alphaMV(s, model, galaxdata):
     if model == 'ISO':
         rhoaux = rho(s, 'ISO')
-        vaux = v(radii, s, 'ISO')
+        vaux = v(galaxdata["radii"], s, 'ISO')
     elif model == 'BUR':
         rhoaux = rho(s, 'BUR')
-        vaux = v(radii, s, 'BUR')
+        vaux = v(galaxdata["radii"], s, 'BUR')
     elif model == 'NFW':
         rhoaux = rho(s, 'NFW')
-        vaux = v(radii, s, 'NFW')
+        vaux = v(galaxdata["radii"], s, 'NFW')
 
-    eval = rhoaux * WeighProd(vaux, vaux, weights) / (CteDim * s ** 3)
-    eval -= 2 * (WeighProd(np.dot(np.atleast_2d(vrot).T, np.atleast_2d(np.ones(len(s)))),
-                           np.sqrt(np.square(vaux) * (np.ones((len(radii), 1)) *
-                                                      (rhoaux / (CteDim * s ** 3))) +
-                                   np.dot(np.atleast_2d(np.square(vbary)).T, np.atleast_2d(np.ones(len(s))))), weights))
+    eval = rhoaux * WeighProd(vaux, vaux, galaxdata["weights"]) / (galaxdata["CteDim"] * s ** 3)
+    eval -= 2 * (WeighProd(np.dot(np.atleast_2d(galaxdata["vrot"]).T, np.atleast_2d(np.ones(len(s)))),
+                           np.sqrt(np.square(vaux) * (np.ones((len(galaxdata["radii"]), 1)) *
+                                                      (rhoaux / (galaxdata["CteDim"] * s ** 3))) +
+                                   np.dot(np.atleast_2d(np.square(galaxdata["vbary"])).T, np.atleast_2d(np.ones(len(s))))),
+                           galaxdata["weights"]))
     return eval
 
 def phi(s, vv, vvbary, model):

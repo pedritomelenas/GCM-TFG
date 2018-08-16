@@ -2,9 +2,9 @@ import random
 import arff
 import numpy as np
 import scipy.optimize as op
-from data import radii, vrot, errs, vbary, n, nu, weights, CteDim, totalnullvbary, somenullvbary
+import data as dt
+import commonFunctions as cf
 from WeighProd import WeighProd
-from alphaMVISO import alphaMVISO
 from collections import deque
 
 
@@ -14,15 +14,109 @@ from collections import deque
 # print(1/((n-nu)*errs[2]**2))
 # print(weights)
 #####################_____________________________________#######################
+galaxdata = {
+    "radii": np.array([]),
+    "vrot": np.array([]),
+    "vbary": np.array([]),
+    "weights": np.array([]),
+    "CteDim": dt.CteDim,
+    "totalnullvbary": False,
+    "somenullvbary": False,
+    "vones": np.array([])
+}
+#print(galaxdata)
+for i in dt.galaxlist:
+    print(" ****************** GALAXY: ", i, " **********************")
+    radii = dt.galaxies[i]["R"]
+    galaxdata["radii"] = radii
+    #print("  R = ", radii)
+    vrot = dt.galaxies[i]["vrot"]
+    galaxdata["vrot"] = vrot
+    #print("  Vrotacional = ", vrot)
+    vbary = dt.galaxies[i]["vbary"]
+    galaxdata["vbary"] = vbary
+    #print("  Vbariónica = ", vbary)
+    n = len(radii)
+    weights = 1 / ((n - dt.nu) * dt.galaxies[i]["errs"] ** 2)
+    galaxdata["weights"] = weights
+    totalnullvbary = np.sum(vbary) == 0
+    galaxdata["totalnullvbary"] = totalnullvbary
+    somenullvbary = round(np.prod(vbary)) == 0
+    galaxdata["somenullvbary"] = somenullvbary
+
+    #print(galaxdata)
+
+    vv = cf.WeighProd(vrot, vrot, weights)  # vrot * np.diag(weights) * vrot
+    vvbary = cf.WeighProd(vbary, vbary, weights)  # vbary * np.diag(weights) * vbary
+    vones = np.ones(n)
+
+    if n - dt.nu > 0:
+        ginf = cf.ginf(radii, 'ISO')
+        g0 = cf.g0(radii, 'ISO')
+        # The solution to #34 --> #35 with vbary=0, which is an upper bound for the solutions to #34 --> #35
+        XVbaryNullinf = (cf.WeighProd(vrot, np.sqrt(ginf), weights) / cf.WeighProd(ginf, vones, weights)) ** 2
+        print("XVbaryNullinf = ", XVbaryNullinf)
+        # The solution to #40 is an upper bound for the solutions to #40
+        XVbaryNull0 = (cf.WeighProd(vrot, np.sqrt(g0), weights) / cf.WeighProd(g0, vones, weights)) ** 2
+        print("XVbaryNull0 = ", XVbaryNull0)
+
+        if totalnullvbary:
+            # print("if")
+            Xinf = XVbaryNullinf
+            X0 = XVbaryNull0
+        elif somenullvbary: ####################################################################### NO ENTIENDO ESTE CASO ##########
+            # print(round(np.prod(vbary)) == 0)
+            jinf = -3
+            # print(eqVLimInf(10 ** (j) * XVbaryNullinf))
+            # print(eqVLim0(10 ** jinf * XVbaryNullinf))
+            while cf.eqVLimInf(10 ** jinf * XVbaryNullinf, galaxdata) > 0:
+                jinf -= 1
+            j0 = -3
+            while cf.eqVLim0(10 ** j0 * XVbaryNull0, galaxdata) > 0:
+                j0 -= 1
+            Xinf = op.brentq(cf.eqVLimInf, 10 ** jinf * XVbaryNullinf, XVbaryNullinf)  # Brent's Method (escalar)
+            # Xinf = op.fsolve(eqVLimInf, (10 ** jinf * XVbaryNullinf + XVbaryNullinf) / 2)
+            X0 = op.brentq(cf.eqVLim0, 10 ** j0 * XVbaryNull0, XVbaryNull0)  # Brent's Method (escalar)
+            # X0 = op.fsolve(eqVLim0, (10 ** j0 * XVbaryNull0 + XVbaryNull0) / 2)  ## USAR ESCALAR
+            # X = fzero(equationVLimInf, [10 ^ (j) * XVbaryNull, XVbaryNull]); # Solves equation  # 34 --> #35
+
+        else:
+            if cf.eqVLimInf(0, galaxdata) >= 0:   # >= ? #########################################################################################
+                Xinf = 0
+            else:
+                Xinf = op.fsolve(cf.eqVLimInf, XVbaryNullinf / 2)  # Solves equation --> #35
+            if cf.eqVLim0(0, galaxdata) >= 0:
+                X0 = 0
+            else:
+                X0 = op.fsolve(cf.eqVLim0, XVbaryNull0 / 2)  # Solves equation #38 --> #40
+
+        ## Calculation of the limit value by using Lemma 2.1 and development #16 ##
+        varphiLimInf = vv + vvbary - 2 * cf.WeighProd(vrot, np.sqrt(Xinf * ginf + (vbary ** 2)), weights) + \
+                       Xinf * cf.WeighProd(ginf, vones, weights)
+        # varphiLimInf = vv + vvbary - 2. * cf.WeighProd(vrot, sqrt(X * ginf(radii) + (vbary. ^ 2)), weights) +
+        # X. * cf.WeighProd(ginf(radii), vones, weights)
+
+        ## Calculation of the limit value by using Lemma 2.2 (2.1?) and development #16 ##
+        varphiLim0 = vv + vvbary + X0 * cf.WeighProd(g0, vones, weights) \
+                     - 2 * cf.WeighProd(vrot, np.sqrt(X0 * g0 + (vbary ** 2)), weights)
+
 
 
 # print(WeighProd(np.array([1,2,3]), np.array([1,2,3]), np.array([1,1,1])))
+radii = dt.galaxies["DDO101"]["R"]
+vrot = dt.galaxies["DDO101"]["vrot"]
+vbary = dt.galaxies["DDO101"]["vbary"]
+errs = dt.galaxies["DDO101"]["errs"]
+n = len(radii)
+weights = 1 / ((n - dt.nu) * dt.galaxies["DDO101"]["errs"] ** 2)
+totalnullvbary = np.sum(vbary) == 0
+somenullvbary = round(np.prod(vbary)) == 0
 
 vv = WeighProd(vrot, vrot, weights)  # vrot * np.diag(weights) * vrot
 vvbary = WeighProd(vbary, vbary, weights)  # vbary * np.diag(weights) * vbary
 vones = np.ones(n)
 
-if n - nu > 0:
+if n - dt.nu > 0:
 
     #########################################################
     ##### Computation of the limit values for varphi(s) #####
@@ -99,18 +193,19 @@ if n - nu > 0:
     ##### Xinf y X0 calculado con brentq y con f solve. ################################################################
     ##### En el caso de somenullvbary, ¿por qué usar brentq y no fsolve?
     ##### (brentq es ESCALAR, fsolve es MULTIDIMENSIONAL)
-    ##### brentq devuelve UNa RAÍZ de f, fsolve devuelve LAS RAÍCES de f
+    ##### brentq devuelve UNA RAÍZ de f, fsolve devuelve LAS RAÍCES de f
 
+    ######### PRUEBA PARA LA DUDA ENTRE fsolve Y brentq ###########
     jinf = -3
     while eqVLimInf(10 ** jinf * XVbaryNullinf) > 0:
         jinf -= 1
-    print("Xinf with brentq = ", op.brentq(eqVLimInf, 10 ** jinf * XVbaryNullinf, XVbaryNullinf))
-    print("Xinf with fsolve = ", op.fsolve(eqVLimInf, XVbaryNullinf / 2))
+    #print("Xinf with brentq = ", op.brentq(eqVLimInf, 10 ** jinf * XVbaryNullinf, XVbaryNullinf))
+    #print("Xinf with fsolve = ", op.fsolve(eqVLimInf, XVbaryNullinf / 2))
     j0 = -3
     while eqVLim0(10 ** j0 * XVbaryNull0) > 0:
         j0 -= 1
-    print("X0 with brentq = ", op.brentq(eqVLim0, 10 ** j0 * XVbaryNull0, XVbaryNull0))
-    print("X0 with fsolve = ", op.fsolve(eqVLim0, XVbaryNull0 / 2))
+    #print("X0 with brentq = ", op.brentq(eqVLim0, 10 ** j0 * XVbaryNull0, XVbaryNull0))
+    #print("X0 with fsolve = ", op.fsolve(eqVLim0, XVbaryNull0 / 2))
 
     ####################################################################################################################
 
@@ -132,8 +227,6 @@ if n - nu > 0:
     #print("varphiLimInf = ", varphiLimInf)
     #print("varphiLim0 = ", varphiLim0)
 
-    def phi(s):
-        return vv + vvbary + alphaMVISO(s)
 
     '''
     print("phi(", (Xinf + X0) / 2, ")=", phi(np.array([(Xinf + X0) / 2])))
