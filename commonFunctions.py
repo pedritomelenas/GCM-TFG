@@ -94,13 +94,13 @@ def rho(s, model, galaxdata):
 
 def alphaMV(s, model, galaxdata):
     if model == 'ISO':
-        rhoaux = rho(s, 'ISO')
+        rhoaux = rho(s, 'ISO', galaxdata)
         vaux = v(galaxdata["radii"], s, 'ISO')
     elif model == 'BUR':
-        rhoaux = rho(s, 'BUR')
+        rhoaux = rho(s, 'BUR', galaxdata)
         vaux = v(galaxdata["radii"], s, 'BUR')
     elif model == 'NFW':
-        rhoaux = rho(s, 'NFW')
+        rhoaux = rho(s, 'NFW', galaxdata)
         vaux = v(galaxdata["radii"], s, 'NFW')
 
     eval = rhoaux * WeighProd(vaux, vaux, galaxdata["weights"]) / (galaxdata["CteDim"] * s ** 3)

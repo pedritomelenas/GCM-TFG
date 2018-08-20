@@ -107,6 +107,8 @@ for i in dt.galaxlist:
     print("varphiLimInf", varphiLimInf)
     print("varphiLim0", varphiLim0)
 
+    def phi(s):
+        return vv + vvbary + cf.alphaMV(s, 'ISO', galaxdata)
 
 '''
 # print(WeighProd(np.array([1,2,3]), np.array([1,2,3]), np.array([1,1,1])))
