@@ -1,14 +1,18 @@
 import random
 import numpy as np
-from redMethRotCurveFitting import phi
+from redMethRotCurveFitting import phi, varphiLimInf
 import time
+
 random.seed(10)
 s0 = [random.uniform(0, 10000)]
-bestphi = phi(np.asarray(s0))
+minphi = phi(np.asarray(s0))
+mins = s0
+bestphi = minphi
+bests = mins
 bestsols = []
 bestsols.append(s0[0])
 close = True
-M = 10000
+M = 100000.0
 m = 0
 bests0 = 0
 S = 10
@@ -16,9 +20,15 @@ dist = 100
 k = 0
 n = 0
 N = 5000
-
+d = 0.0
+farest = 0.0
+tol = 10**(-2)
+print("s0 = ", s0)
+print("phi(np.asarray([M])) = ", phi(np.asarray([M])))
+print("varphiLimInf = ", varphiLimInf)
+print("abs(phi(np.asarray([M])) - varphiLimInf) / varphiLimInf = ", abs(phi(np.asarray([M])) - varphiLimInf) / varphiLimInf)
 start_time = time.time()
-while abs(M - m) >= 10.0:
+while abs(phi(np.asarray([M])) - varphiLimInf) / varphiLimInf >= tol:
     print("k = ", k)
     print("n = ", n)
     n = 0
@@ -35,24 +45,30 @@ while abs(M - m) >= 10.0:
                 close = False
         close = True
         phi0 = phi(np.asarray(s0))
-        if phi0 < bestphi:
-            #print("mejor")
-            bestphi = phi0
+        if phi0 < minphi:
+            print("mejor *******")
+            minphi = phi0
+            print("bestphi = ", bestphi, " para ", s0[0])
             bestsols.append(s0[0])
-            bests0 = s0[0]
+            mins = s0[0]
             #print(bestsols)
             #print(len(bestsols))
             n = 0
         else:
             n += 1
-            if n > N and dist/10 > 0.0 and S - 1 > 1:
-                dist /= 10
-                S -= 1
+            if n > N:
+                if dist/10 > 0.0:
+                    dist /= 10
+                if S - 1 > 1:
+                    S -= 1
+                n = 0
                 print("S_ = ", S)
     print(time.time() - second_start, "SEGUNDOS EN LLENAR bestsols CON ", len(bestsols), " VALORES EN LA ITERACIÓN k = ", k)
+    if (minphi < bestphi):
+        bestphi = minphi
+        bests = mins
     media = sum(bestsols)/len(bestsols)
     print("media = ", media)
-    d = 0.0
     farest = max(bestsols)
     for s in bestsols:
         if abs(s - media) >= d:
@@ -69,14 +85,15 @@ while abs(M - m) >= 10.0:
     print("abs(m - M) = ", abs(M - m))
    # if S - 1 > 1:
     #    S -= 1
-    N *= 2
-    rsol = (bestsols[0] + bestsols[1]) / 2  #random.choice(bestsols)
+    #N *= 2
+    rsol = random.uniform(media, M)     #bestsols[0] + 1   #(bestsols[0] + bestsols[1]) / 2  #random.choice(bestsols)
     bestsols.clear()
     print("rsol = ", rsol)
     bestsols.append(rsol)
-    bestphi = phi(np.asarray([rsol]))
-    if dist/10 > 0.0:
-        dist /= 10
+    bestphi = phi(np.asarray([rsol]))   ## AQUÍ ESTÁ PERDIENDO LA MEJOR SOLUCIÓN
+    n = 0
+    #if dist/10 > 0.0:
+    #    dist /= 10
     #print("dist = ", dist)
     k += 1
     print("S = ", S)
