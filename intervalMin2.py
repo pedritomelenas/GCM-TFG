@@ -27,13 +27,8 @@ while maxiter < 100 and direction != 0 and k < 50:
     maxiter += 1
     varphi = phi(10**(intervalinf + np.array([-0.2, -0.1, 0.0, 0.1, 0.2])))
     eval = abs(varphi - varphiLim0) / varphiLim0
-    X.append(10**intervalinf + np.array([-0.2, -0.1, 0.0, 0.1, 0.2]))
+    X.append(10**(intervalinf + np.array([-0.2, -0.1, 0.0, 0.1, 0.2])))
     Y.append(varphi)
-    #print("eval[2] = ", eval[2])
-    #print("eval[3] = ", eval[3])
-    #print("eval[4] = ", eval[4])
-    #print("sum(eval[2:5]) = ", sum(eval[2:5]))
-    #print("sum(eval[0:3]) = ", sum(eval[0:3]))
     # [2:5] [0,2]
     # [5:10] [0:5]
     #test1 = sum(eval[2:5]) < tol
@@ -49,10 +44,10 @@ while maxiter < 100 and direction != 0 and k < 50:
 
     if test1 == 0 and test2 == 1:
         opcion = 1
-        stop = True                 # Podemos convertir stop en un contador, en lugar de un booleano, pera
+        stop = True                 # Podemos convertir stop en un contador, en lugar de un booleano, para
         direction = -1              # establecer un patrón más específico
         i = intervalinf
-        intervalinf = intervalinf + random.uniform(0.2, 0.3) * direction        # En cada iteración, intervalinf
+        intervalinf = intervalinf + random.uniform(0.2, 0.6) * direction        # En cada iteración, intervalinf
         #direction = 0                                                          # varía con una dirección determinada
     elif test1 == 0 and test2 == 0:                                             # pero con módulo aleatorio
         opcion = 2
@@ -66,6 +61,7 @@ while maxiter < 100 and direction != 0 and k < 50:
         if stop:
             direction = 0
             intervalinf = i
+            diferencia = abs(phi(np.asarray([10 ** intervalinf])) - varphiLim0)
         else:
             direction = 1
             intervalinf = intervalinf + random.uniform(0.2, 0.3) * direction
@@ -79,8 +75,10 @@ while maxiter < 100 and direction != 0 and k < 50:
         #intervalinf = intervalinf + 0.3 * direction
     if abs(10**intervalinf - lastint) < tol:
         k += 1
-        print("opcion = ", opcion)
-        print("intervalinf = ", intervalinf)
+        if k >= 25 and abs(phi(np.asarray([10**intervalsup])) - varphiLimInf) >= 1:
+            k = 0
+        #print("opcion = ", opcion)
+        #print("intervalinf = ", intervalinf)
         #dir.append(direction)
     else:
         k = 0
@@ -91,6 +89,7 @@ print("maxiter = ", maxiter)
 print("k = ", k)
 print("dir = ", dir)
 print("direction = ", direction)
+print("diferencia = ", diferencia)
 direction = 1
 maxiter = 0
 k = 0
@@ -98,7 +97,11 @@ lastint = 0.0
 dir.clear()
 stop = False
 i = 0.0
+dir.clear()
 
+## IDEA: APROVECHAR ESTE ALGORITMO PARA DETECTAR, SI ES QUE SE DA, LA EXISTENCIA DEL MÍNIMO ##
+    ## Si varphiLim0 < varphiLimInf, basta con que exista un s tal que varphi(s) < varphiLim0 para asegurar la existencia del límite
+    ## Si varphiLimInf < varphiLim0, basta con que exista un s tal que varphi(s) < varphiLimInf para asegurar la existencia del límite
 
 while maxiter < 100 and direction != 0 and k < 50:  # Nueva condición de parada --> relacionar con el límite
     maxiter += 1
@@ -120,12 +123,10 @@ while maxiter < 100 and direction != 0 and k < 50:  # Nueva condición de parada
         if e > tol:
             test1 = False
     if test1 == 0 and test2 == 1:
-        print("maxiter = ", maxiter)
-        print("diferencia = ", abs(phi(np.asarray([10**intervalsup])) - varphiLimInf))
         stop = True         # Podemos convertir stop en un contador, en lugar de un booleano, pera
         direction = 1       # establecer un patrón más específico --> agrandar el boleano: 0.3 - 0.6
         i = intervalsup
-        intervalsup = intervalsup + random.uniform(0.2, 0.3) * direction            # En cada iteración, intervalsup
+        intervalsup = intervalsup + random.uniform(0.2, 0.6) * direction            # En cada iteración, intervalsup
         # direction = 0                                                             # varía con una dirección determinada
     elif test1 == 0 and test2 == 0:
         if stop:
@@ -146,27 +147,29 @@ while maxiter < 100 and direction != 0 and k < 50:  # Nueva condición de parada
         direction = 1
         intervalsup = intervalsup + random.uniform(0.2, 0.3) * direction
     if abs(10**intervalsup - lastint) < tol:
-        #if k >= 10 and abs(phi(np.asarray(10**intervalsup)) - varphiLimInf):
-         #   k = 0
         k += 1
-        print("intervalsup = ", intervalsup)
+        if k >= 25 and abs(phi(np.asarray([10**intervalsup])) - varphiLimInf) >= 1:
+            k = 0
+        #print("intervalsup = ", intervalsup)
         #dir.append(direction)
     else:
         k = 0
     lastint = 10**intervalinf
+    dir.append(direction)
 
 print("k = ", k)
 print("diferencia = ", diferencia)
 #print("dir = ", dir)
 print("maxiter = ", maxiter)
 print("direction = ", direction)
+print("dir = ", dir)
 Xa = np.asarray(X)
 Ya = np.asarray(Y)
 plt.scatter(X, Y)
-plt.hlines(varphiLimInf, 0, 1500)
+plt.hlines(varphiLimInf, 0, 1000)
 plt.hlines(varphiLim0, 0, 100)
 plt.vlines(10**intervalsup, 0, 50)
-plt.vlines(10**intervalinf, 50, 100)
+plt.vlines(10**intervalinf, 50, 70)
 plt.show()
 
 if intervalinf > intervalsup:
