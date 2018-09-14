@@ -4,8 +4,10 @@ import numpy as np
 import scipy.optimize as op
 import data as dt
 import commonFunctions as cf
+from intervalMin2 import intervalMin
 from WeighProd import WeighProd
 from collections import deque
+import matplotlib.pyplot as plt
 
 
 #####################________ REVISAR PRECISIÓN __________######################
@@ -23,6 +25,7 @@ galaxdata = {
     "totalnullvbary": False,
     "somenullvbary": False,
     "vones": np.array([])
+
 }
 #print(galaxdata)
 for i in dt.galaxlist:
@@ -48,9 +51,10 @@ for i in dt.galaxlist:
 
     #print(galaxdata)
 
-    vv = cf.WeighProd(vrot, vrot, weights)  # vrot * np.diag(weights) * vrot
-    vvbary = cf.WeighProd(vbary, vbary, weights)  # vbary * np.diag(weights) * vbary
+    vv = cf.vv(galaxdata)  # vrot * np.diag(weights) * vrot
+    vvbary = cf.vvbary(galaxdata)  # vbary * np.diag(weights) * vbary
     vones = np.ones(n)
+    print(type(vv))
 
     if n - dt.nu > 0:
         ginf = cf.ginf(radii, 'ISO')
@@ -102,13 +106,23 @@ for i in dt.galaxlist:
         varphiLim0 = vv + vvbary + X0 * cf.WeighProd(g0, vones, weights) \
                      - 2 * cf.WeighProd(vrot, np.sqrt(X0 * g0 + (vbary ** 2)), weights)
 
-    print("Xinf = ", Xinf)
-    print("X0 = ", X0)
+    #print("Xinf = ", Xinf)
+    #print("X0 = ", X0)
     print("varphiLimInf", varphiLimInf)
     print("varphiLim0", varphiLim0)
 
-    def phi(s):
-        return vv + vvbary + cf.alphaMV(s, 'ISO', galaxdata)
+
+    interval = intervalMin(varphiLim0, varphiLimInf, galaxdata)
+    intervalinf = interval[0][0]
+    intervalsup = interval[0][1]
+    print("[", intervalinf, ", ", intervalsup, "]")
+    Xi = interval[1]
+    Yi = interval[2]
+    X = np.logspace(np.log10(intervalinf), np.log10(intervalsup), 8)
+    plt.semilogx()
+    plt.scatter(X, np.zeros(len(X)))
+    plt.scatter(Xi, Yi)
+    plt.show()
 
 '''
 # print(WeighProd(np.array([1,2,3]), np.array([1,2,3]), np.array([1,1,1])))

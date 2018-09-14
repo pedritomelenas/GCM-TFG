@@ -111,11 +111,19 @@ def alphaMV(s, model, galaxdata):
                            galaxdata["weights"]))
     return eval
 
-def phi(s, vv, vvbary, model):
+def vv(galaxdata):
+    v = galaxdata["vrot"]
+    return WeighProd(v, v, galaxdata["weights"])
+
+def vvbary(galaxdata):
+    vbary = galaxdata["vbary"]
+    return WeighProd(vbary, vbary, galaxdata["weights"])
+
+def phi(s, model, galaxdata):
     if model == 'ISO':
-        phi = vv + vvbary + alphaMV(s, 'ISO')
+        phi = vv(galaxdata) + vvbary(galaxdata) + alphaMV(s, 'ISO', galaxdata)
     elif model == 'BUR':
-        phi = vv + vvbary + alphaMV(s, 'BUR')
+        phi = vv(galaxdata) + vvbary(galaxdata) + alphaMV(s, 'BUR', galaxdata)
     elif model == 'NFW':
-        phi = vv + vvbary + alphaMV(s, 'NFW')
+        phi = vv(galaxdata) + vvbary(galaxdata) + alphaMV(s, 'NFW', galaxdata)
     return phi
