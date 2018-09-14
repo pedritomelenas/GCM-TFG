@@ -1,6 +1,6 @@
 import random
 import numpy as np
-from commonFunctions import phi#, varphiLimInf, varphiLim0
+from commonFunctions import phi
 import time
 import matplotlib.pyplot as plt
 
