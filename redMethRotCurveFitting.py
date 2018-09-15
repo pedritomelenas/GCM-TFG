@@ -4,7 +4,7 @@ import numpy as np
 import scipy.optimize as op
 import data as dt
 import commonFunctions as cf
-from intervalMin2 import intervalMin
+from intervalMinim import intervalMin
 from WeighProd import WeighProd
 from collections import deque
 import matplotlib.pyplot as plt
@@ -119,6 +119,8 @@ for i in dt.galaxlist:
     Xi = interval[1]
     Yi = interval[2]
     X = np.logspace(np.log10(intervalinf), np.log10(intervalsup), 8)
+    print(X)
+    print(len(X))
     plt.semilogx()
     plt.scatter(X, np.zeros(len(X)))
     plt.scatter(Xi, Yi)
