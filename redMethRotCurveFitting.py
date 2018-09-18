@@ -119,8 +119,6 @@ for i in dt.galaxlist:
     Xi = interval[1]
     Yi = interval[2]
     X = np.logspace(np.log10(intervalinf), np.log10(intervalsup), 8)
-    print(X)
-    print(len(X))
     plt.semilogx()
     plt.scatter(X, np.zeros(len(X)))
     plt.scatter(Xi, Yi)

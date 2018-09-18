@@ -28,10 +28,22 @@ def intervalMin(varphiLim0, varphiLimInf, galaxdata):
     i = 0.0
     X = []
     Y = []
+    minphi = 10**4
+    minx = 0
     random.seed(1)
     while maxiter < 100 and direction != 0 and k < 50:
         maxiter += 1
-        varphi = phi(10**(intervalinf + np.array([-0.2, -0.1, 0.0, 0.1, 0.2])), 'ISO', galaxdata)
+        s = 10**(intervalinf + np.array([-0.2, -0.1, 0.0, 0.1, 0.2]))
+        varphi = phi(s, 'ISO', galaxdata)
+        if min(varphi) < minphi:
+            minphi = min(varphi)
+            pos = (varphi.tolist()).index(minphi)
+            minx = s[pos]
+            #print("s = ", s)
+            #print("varphi = ", varphi)
+            #print(minphi)
+            #print(pos)
+            #print(minx)
         eval = abs(varphi - varphiLim0) / varphiLim0
         X.append(10**(intervalinf + np.array([-0.2, -0.1, 0.0, 0.1, 0.2])))
         Y.append(varphi)
@@ -120,10 +132,16 @@ def intervalMin(varphiLim0, varphiLimInf, galaxdata):
     while maxiter < 100 and direction != 0 and k < 50:  # Nueva condición de parada --> relacionar con el límite
         maxiter += 1
         # [-0.2, -0.15, -0.1, -0.05, 0.0, 0.05, 0.10, 0.15, 0.2]
-        varphi = phi(10**(intervalsup + np.array([-0.2, -0.1, 0.0, 0.1, 0.2])), 'ISO', galaxdata)
+        s = 10**(intervalsup + np.array([-0.2, -0.1, 0.0, 0.1, 0.2]))
+        varphi = phi(s, 'ISO', galaxdata)
+        if min(varphi) < minphi:
+            minphi = min(varphi)
+            pos = (varphi.tolist()).index(minphi)
+            minx = s[pos]
         eval = abs(varphi - varphiLimInf) / varphiLimInf    ##  CORREGIDO
         X.append(10**(intervalsup + np.array([-0.2, -0.1, 0.0, 0.1, 0.2])))
         Y.append(varphi)
+
         # [3:5] [0,3]
         # [5:10] [0:5]
         #test1 = sum(eval[0:3]) < tol
@@ -207,6 +225,7 @@ def intervalMin(varphiLim0, varphiLimInf, galaxdata):
 
     #print("[", 10**intervalinf, ", ", 10**intervalsup, "]")
     print("Tamaño intervalo = ", abs(10**intervalinf - 10**intervalsup))
+    print("minphi = ", minphi, "; minx = ", minx)
     interval = [10**intervalinf, 10**intervalsup]
 
     return [interval, X, Y]
