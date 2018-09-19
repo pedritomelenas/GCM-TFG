@@ -13,7 +13,7 @@ import matplotlib.pyplot as plt
 ## 1) APROVECHAR ESTE ALGORITMO PARA DETECTAR, SI ES QUE SE DA, LA EXISTENCIA DEL MÍNIMO ##
 ## Si varphiLim0 < varphiLimInf, basta con que exista un s tal que varphi(s) < varphiLim0 para asegurar la existencia del límite
 ## Si varphiLimInf < varphiLim0, basta con que exista un s tal que varphi(s) < varphiLimInf para asegurar la existencia del límite
-## 2) APROVECHAR ESTE ALGORITMO PARA ALMACENAR EL MÍNIMO EVALUADO HASTA EL MOMENTO
+## 2) APROVECHAR ESTE ALGORITMO PARA ALMACENAR EL MÍNIMO EVALUADO HASTA EL MOMENTO <-- Hecho (quizás no haya merecido la pena => Revisar)
 
 def intervalMin(varphiLim0, varphiLimInf, galaxdata):
     tol = 10 ** -2
@@ -22,7 +22,7 @@ def intervalMin(varphiLim0, varphiLimInf, galaxdata):
     intervalinf = -3
     intervalsup = 3
     k = 0
-    lastint = phi(np.array([float(10 ** intervalinf)]), 'ISO', galaxdata)
+    lastint = phi(np.array([float(10 ** intervalinf)]), galaxdata)
     dir = []
     stop = False
     i = 0.0
@@ -34,7 +34,7 @@ def intervalMin(varphiLim0, varphiLimInf, galaxdata):
     while maxiter < 100 and direction != 0 and k < 50:
         maxiter += 1
         s = 10**(intervalinf + np.array([-0.2, -0.1, 0.0, 0.1, 0.2]))
-        varphi = phi(s, 'ISO', galaxdata)
+        varphi = phi(s, galaxdata)
         if min(varphi) < minphi:
             minphi = min(varphi)
             pos = (varphi.tolist()).index(minphi)
@@ -80,7 +80,7 @@ def intervalMin(varphiLim0, varphiLimInf, galaxdata):
             if stop:
                 direction = 0
                 intervalinf = i
-                diferencia = abs(phi(np.asarray([10 ** intervalinf]), 'ISO', galaxdata) - varphiLim0)
+                diferencia = abs(phi(np.asarray([10 ** intervalinf]), galaxdata) - varphiLim0)
             else:
                 direction = 1
                 intervalinf = intervalinf + random.uniform(0.2, 0.3) * direction
@@ -95,14 +95,14 @@ def intervalMin(varphiLim0, varphiLimInf, galaxdata):
 
         #print("--- ", abs(phi(np.array([10**intervalinf])) - varphiLim0))
         #print(phi(np.array([10**intervalinf])), " - ", lastint, " = ", abs(phi(np.array([10**intervalinf])) - lastint))
-        if abs(phi(np.array([10**intervalinf]), 'ISO', galaxdata) - lastint) < tol:
+        if abs(phi(np.array([10**intervalinf]), galaxdata) - lastint) < tol:
             #print("SUMA 1")
             k += 1
-            if k > 5 and abs(phi(np.asarray([10 ** intervalinf]), 'ISO', galaxdata) - varphiLim0) < 1:
+            if k > 5 and abs(phi(np.asarray([10 ** intervalinf]), galaxdata) - varphiLim0) < 1:
                 #print("SALTO 1")
                 intervalinf = intervalinf + random.uniform(0.7, 0.8) * direction
                 k = 0
-            if k >= 25 and abs(phi(np.asarray([10**intervalinf]), 'ISO', galaxdata) - varphiLim0) >= 1:
+            if k >= 25 and abs(phi(np.asarray([10**intervalinf]), galaxdata) - varphiLim0) >= 1:
                 #print("ANULA 1")
                 k = 0
             #print("opcion = ", opcion)
@@ -111,7 +111,7 @@ def intervalMin(varphiLim0, varphiLimInf, galaxdata):
         else:
             #print("ELSE 1")
             k = 0
-        lastint = phi(np.array([float(10**intervalinf)]), 'ISO', galaxdata)
+        lastint = phi(np.array([float(10**intervalinf)]), galaxdata)
         dir.append(direction)
 
     #print("maxiter = ", maxiter)
@@ -122,7 +122,7 @@ def intervalMin(varphiLim0, varphiLimInf, galaxdata):
     direction = 1
     maxiter = 0
     k = 0
-    lastint = phi(np.array([float(10**intervalsup)]), 'ISO', galaxdata)
+    lastint = phi(np.array([float(10**intervalsup)]), galaxdata)
     dir.clear()
     stop = False
     i = 0.0
@@ -133,7 +133,7 @@ def intervalMin(varphiLim0, varphiLimInf, galaxdata):
         maxiter += 1
         # [-0.2, -0.15, -0.1, -0.05, 0.0, 0.05, 0.10, 0.15, 0.2]
         s = 10**(intervalsup + np.array([-0.2, -0.1, 0.0, 0.1, 0.2]))
-        varphi = phi(s, 'ISO', galaxdata)
+        varphi = phi(s, galaxdata)
         if min(varphi) < minphi:
             minphi = min(varphi)
             pos = (varphi.tolist()).index(minphi)
@@ -169,7 +169,7 @@ def intervalMin(varphiLim0, varphiLimInf, galaxdata):
             if stop:
                 direction = 0
                 intervalsup = i
-                diferencia = abs(phi(np.asarray([10**intervalsup]), 'ISO', galaxdata) - varphiLimInf)
+                diferencia = abs(phi(np.asarray([10**intervalsup]), galaxdata) - varphiLimInf)
             else:
                 direction = -1
                 intervalsup = intervalsup + random.uniform(0.2, 0.3) * direction
@@ -181,14 +181,14 @@ def intervalMin(varphiLim0, varphiLimInf, galaxdata):
 
         #print("--- ", abs(phi(np.array([10**intervalsup])) - varphiLimInf))
         #print(phi(np.array([10**intervalsup])), " - ", varphiLimInf, " = ", abs(phi(np.array([10**intervalsup])) - varphiLimInf))
-        if abs(phi(np.array([10**intervalsup]), 'ISO', galaxdata) - lastint) < tol:
+        if abs(phi(np.array([10**intervalsup]), galaxdata) - lastint) < tol:
             #print("SUMA 2")
             k += 1
-            if k > 5 and abs(phi(np.asarray([10**intervalsup]), 'ISO', galaxdata) - varphiLimInf) < 1:
+            if k > 5 and abs(phi(np.asarray([10**intervalsup]), galaxdata) - varphiLimInf) < 1:
                 #print("SALTO 2")
                 intervalsup = intervalsup + random.uniform(0.7, 0.8) * direction
                 k = 0
-            if k >= 25 and abs(phi(np.asarray([10**intervalsup]), 'ISO', galaxdata) - varphiLimInf) > 1:
+            if k >= 25 and abs(phi(np.asarray([10**intervalsup]), galaxdata) - varphiLimInf) > 1:
                 k = 0
                 #print("ANULA 2")
             #print("intervalsup = ", intervalsup)
@@ -196,7 +196,7 @@ def intervalMin(varphiLim0, varphiLimInf, galaxdata):
         else:
             #print("ELSE 2")
             k = 0
-        lastint = phi(np.array([float(10**intervalsup)]), 'ISO', galaxdata)
+        lastint = phi(np.array([float(10**intervalsup)]), galaxdata)
         dir.append(direction)
 
     #print("k = ", k)
@@ -224,9 +224,9 @@ def intervalMin(varphiLim0, varphiLimInf, galaxdata):
         intervalsup = 5
 
     #print("[", 10**intervalinf, ", ", 10**intervalsup, "]")
-    print("Tamaño intervalo = ", abs(10**intervalinf - 10**intervalsup))
-    print("minphi = ", minphi, "; minx = ", minx)
+    #print("Tamaño intervalo = ", abs(10**intervalinf - 10**intervalsup))
+    #print("minphi = ", minphi, "; minx = ", minx)
     interval = [10**intervalinf, 10**intervalsup]
 
-    return [interval, X, Y]
+    return [interval, X, Y, minphi, minx]
 

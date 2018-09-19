@@ -15,6 +15,8 @@ def ginf(x, model):
     return ginf
 
 def eqVLimInf(t, ginf, galaxdata):
+    #if galaxdata["profile"] == 'BUR':
+     #   print("ERROR: t = ", t, "; ginf = ", ginf, "; galaxdata['vbary'] ** 2 = ", galaxdata["vbary"] ** 2)
     return WeighProd(ginf, galaxdata["vones"], galaxdata["weights"]) - \
            WeighProd(galaxdata["vrot"], (ginf / np.sqrt(t * ginf + galaxdata["vbary"] ** 2)), galaxdata["weights"])
 
@@ -45,14 +47,17 @@ def v(x, s, model):
         # aux = sqrt(4 * pi * (log(1 + x * s). / (x * ones(size(s))) - (ones(size(x)) * s). / (1 + x * s)));
     return v
 
-def rho(s, model, galaxdata):
+def rho(s, galaxdata):
     aux = 0 * s
+    vHalos = v(galaxdata["radii"], s, galaxdata["profile"])
+    '''
     if model == 'ISO':
         vHalos = v(galaxdata["radii"], s, 'ISO')
     elif model == 'BUR':
         vHalos = v(galaxdata["radii"], s, 'BUR')
     elif model == 'NFW':
         vHalos = v(galaxdata["radii"], s, 'NFW')
+    '''
     # print("vHalos = ", vHalos) # Para s = 10^-12, vHalos = 0
     rhs = WeighProd(vHalos, vHalos, galaxdata["weights"])  # rhs Eq  # 19 and #20 up to multiplicative constant 1/(s^3 CteDim) .
     # print("RHS = ", rhs)
@@ -92,7 +97,10 @@ def rho(s, model, galaxdata):
             aux[i] = op.fsolve(rhoequation, rhoVbaryNull[i] / 2)
     return aux
 
-def alphaMV(s, model, galaxdata):
+def alphaMV(s, galaxdata):
+    rhoaux = rho(s, galaxdata)
+    vaux = v(galaxdata["radii"], s, galaxdata["profile"])
+    '''
     if model == 'ISO':
         rhoaux = rho(s, 'ISO', galaxdata)
         vaux = v(galaxdata["radii"], s, 'ISO')
@@ -102,7 +110,7 @@ def alphaMV(s, model, galaxdata):
     elif model == 'NFW':
         rhoaux = rho(s, 'NFW', galaxdata)
         vaux = v(galaxdata["radii"], s, 'NFW')
-
+    '''
     eval = rhoaux * WeighProd(vaux, vaux, galaxdata["weights"]) / (galaxdata["CteDim"] * s ** 3)
     eval -= 2 * (WeighProd(np.dot(np.atleast_2d(galaxdata["vrot"]).T, np.atleast_2d(np.ones(len(s)))),
                            np.sqrt(np.square(vaux) * (np.ones((len(galaxdata["radii"]), 1)) *
@@ -119,11 +127,14 @@ def vvbary(galaxdata):
     vbary = galaxdata["vbary"]
     return WeighProd(vbary, vbary, galaxdata["weights"])
 
-def phi(s, model, galaxdata):
-    if model == 'ISO':
+def phi(s, galaxdata):
+    phi = vv(galaxdata) + vvbary(galaxdata) + alphaMV(s, galaxdata)
+    '''
+    if galaxdata["profile"] == 'ISO':
         phi = vv(galaxdata) + vvbary(galaxdata) + alphaMV(s, 'ISO', galaxdata)
-    elif model == 'BUR':
+    elif galaxdata["profile"] == 'BUR':
         phi = vv(galaxdata) + vvbary(galaxdata) + alphaMV(s, 'BUR', galaxdata)
-    elif model == 'NFW':
+    elif galaxdata["profile"] == 'NFW':
         phi = vv(galaxdata) + vvbary(galaxdata) + alphaMV(s, 'NFW', galaxdata)
+    '''
     return phi
