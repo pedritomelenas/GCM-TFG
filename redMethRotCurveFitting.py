@@ -77,32 +77,33 @@ for i in dt.galaxlist:
                 jinf = -3
                 # print(eqVLimInf(10 ** (j) * XVbaryNullinf))
                 # print(eqVLim0(10 ** jinf * XVbaryNullinf))
-                if galaxdata["profile"] == 'BUR':
-                    print("ERROR 1: = ", 10 ** jinf * XVbaryNullinf)
+                #if galaxdata["profile"] == 'BUR':
+                #    print("ERROR 1: = ", 10 ** jinf * XVbaryNullinf)
                 while cf.eqVLimInf(10 ** jinf * XVbaryNullinf, ginf, galaxdata) > 0:
                     jinf -= 1
                 j0 = -3
                 while cf.eqVLim0(10 ** j0 * XVbaryNull0, g0, galaxdata) > 0:
                     j0 -= 1
                 Xinf = op.brentq(cf.eqVLimInf, 10 ** jinf * XVbaryNullinf, XVbaryNullinf)  # Brent's Method (escalar)
-                # Xinf = op.fsolve(eqVLimInf, (10 ** jinf * XVbaryNullinf + XVbaryNullinf) / 2)
                 X0 = op.brentq(cf.eqVLim0, 10 ** j0 * XVbaryNull0, XVbaryNull0)  # Brent's Method (escalar)
-                # X0 = op.fsolve(eqVLim0, (10 ** j0 * XVbaryNull0 + XVbaryNull0) / 2)  ## USAR ESCALAR
-                # X = fzero(equationVLimInf, [10 ^ (j) * XVbaryNull, XVbaryNull]); # Solves equation  # 34 --> #35
 
             else:
-                if cf.eqVLimInf(0, ginf, galaxdata) >= 0:   # >= ? #########################################################################################
+                if cf.eqVLimInf(0, ginf, galaxdata) >= 0:   # <= ? #########################################################################################
                     Xinf = 0
                 else:
-                    Xinf, info, ier, msg = op.fsolve(cf.eqVLimInf, XVbaryNullinf / 2, (ginf, galaxdata), full_output=True)  # Solves equation --> #35
+                    #Xinf, info, ier, msg = op.fsolve(cf.eqVLimInf, XVbaryNullinf / 2, (ginf, galaxdata), full_output=True)  # Solves equation --> #35
+                    Xinf = op.brentq(cf.eqVLimInf, 0, XVbaryNullinf, (ginf, galaxdata))
+                    '''
                     if galaxdata["profile"] == 'BUR':
                         print("ERROR 2")
                         print("ier = ", ier)
                         print("msg = ", msg)        ######## fsolve no encuentra solución !!!!!!!
+                        '''
                 if cf.eqVLim0(0, g0, galaxdata) >= 0:
                     X0 = 0
                 else:
-                    X0 = op.fsolve(cf.eqVLim0, XVbaryNull0 / 2, (g0, galaxdata))  # Solves equation #38 --> #40
+                    X0 = op.brentq(cf.eqVLim0, 0, XVbaryNull0, (g0, galaxdata))
+                    #X0 = op.fsolve(cf.eqVLim0, XVbaryNull0 / 2, (g0, galaxdata))  # Solves equation #38 --> #40
 
             ## Calculation of the limit value by using Lemma 2.1 and development #16 ##
             varphiLimInf = vv + vvbary - 2 * cf.WeighProd(vrot, np.sqrt(Xinf * ginf + (vbary ** 2)), weights) + \
@@ -130,6 +131,8 @@ for i in dt.galaxlist:
         plt.semilogx()
         plt.scatter(X, np.zeros(len(X)))
         plt.scatter(Xi, Yi)
+        plt.hlines(varphiLimInf, 10 ** -2, intervalsup)
+        plt.hlines(varphiLim0, intervalinf, 10)
         plt.show()
         minvarphi = varphiMin(intervalinf, intervalsup, galaxdata)
         print("minphi = ", interval[3])
