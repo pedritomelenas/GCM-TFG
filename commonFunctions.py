@@ -50,17 +50,10 @@ def v(x, s, model):
 def rho(s, galaxdata):
     aux = 0 * s
     vHalos = v(galaxdata["radii"], s, galaxdata["profile"])
-    '''
-    if model == 'ISO':
-        vHalos = v(galaxdata["radii"], s, 'ISO')
-    elif model == 'BUR':
-        vHalos = v(galaxdata["radii"], s, 'BUR')
-    elif model == 'NFW':
-        vHalos = v(galaxdata["radii"], s, 'NFW')
-    '''
     # print("vHalos = ", vHalos) # Para s = 10^-12, vHalos = 0
     rhs = WeighProd(vHalos, vHalos, galaxdata["weights"])  # rhs Eq  # 19 and #20 up to multiplicative constant 1/(s^3 CteDim) .
-    # print("RHS = ", rhs)
+    if (galaxdata["profile"] == 'BUR'):
+        print("RHS = ", rhs)
     rhoVbaryNull = galaxdata["CteDim"] * (s ** 3) * (WeighProd(np.dot(np.atleast_2d(galaxdata["vrot"]).T,
                                                                       np.atleast_2d(np.ones(len(s)))),
                                                                vHalos, galaxdata["weights"]) / rhs) ** 2  # Eq #21
@@ -68,6 +61,8 @@ def rho(s, galaxdata):
         aux = rhoVbaryNull
     elif galaxdata["somenullvbary"]:
         rango = np.nonzero(rhs)
+        if (galaxdata["profile"] == 'BUR'):
+            print("RANGO = ", rango)
         for i in rango:
             def rhoequation(t):
                 return rhs[i] - WeighProd(galaxdata["vrot"], (vHalos[:][i] ** 2) / np.sqrt(t *
@@ -76,14 +71,16 @@ def rho(s, galaxdata):
             j = -3
             while rhoequation((10 ** j) * rhoVbaryNull[i]) > 0:
                 j -= 1
-            aux[i] = op.fsolve(rhoequation, ((10 ** j) * rhoVbaryNull[i] + rhoVbaryNull[i]) / 2) ## MIRAR MULTIDIMENSIONAL
+            aux[i] = op.brentq(rhoequation, (10 ** j) * rhoVbaryNull[i], rhoVbaryNull[i]) ## puede ser brentq?
 
     else:
         lhs = WeighProd(np.dot(np.atleast_2d(galaxdata["vrot"]).T, np.atleast_2d(np.ones(len(s)))), (vHalos ** 2) /
                         (np.dot(np.atleast_2d(galaxdata["vbary"]).T, np.atleast_2d(np.ones(len(s))))), galaxdata["weights"])
-        #print("LHS = ", lhs)
+        if (galaxdata["profile"] == 'BUR'):
+            print("LHS = ", lhs)
         rango = np.where(rhs < lhs)
-        #print("RANGO = ", rango)
+        if (galaxdata["profile"] == 'BUR'):
+            print("RANGO = ", rango)
         for i in rango[0]:      ## Intentar VECTORIZAR
             #print(i)
             #print(vHalos)
@@ -94,7 +91,7 @@ def rho(s, galaxdata):
                 return rhs[i] - WeighProd(galaxdata["vrot"], (np.square(vHalos[:, i])) /
                                           np.sqrt(t * np.square((vHalos[:, i])) / ((s[i] ** 3) * galaxdata["CteDim"]) +
                                                                 np.square(galaxdata["vbary"])), galaxdata["weights"])
-            aux[i] = op.fsolve(rhoequation, rhoVbaryNull[i] / 2)
+            aux[i] = op.brentq(rhoequation, 0, rhoVbaryNull[i])    # puede ser brentq
     return aux
 
 def alphaMV(s, galaxdata):

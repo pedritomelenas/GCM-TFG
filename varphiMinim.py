@@ -53,7 +53,7 @@ def varphiMin(intervalinf, intervalsup, galaxdata):
                 #print("SUBINT LAST = ", subint)
                 #print("s+1 = ", s+1)
                 subint = np.insert(subint, s+1, m)
-                subint = np.inser(subint, s+2, d)       ## sin esto no hace el fork bien! Falta probar
+                subint = np.insert(subint, s+2, d)       ## sin esto no hace el fork bien! Falta probar
                 #print("SUBINT NEW = ", subint)
             #print("min = ", min([I, M, D]))
             if min([I, M, D]) < minphi:
