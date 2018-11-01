@@ -38,13 +38,18 @@ def v(x, s, model):
         v = np.sqrt(4 * np.pi * (np.outer(x, s) - np.arctan(np.outer(x, s))) / np.outer(x, np.ones(len(s))))
         # aux=sqrt(4*pi*(x*s-atan(x*s))./(x*ones(size(s))));
     elif model == 'BUR':
+        #print("x_BUR = ", x)
+        #print("s_BUR = ", s)
         v = np.sqrt(np.pi * (np.log((1+(np.outer(x, s))**2) * ((1 + np.outer(x, s))**2)) - 2*np.arctan(np.outer(x, s)))
                     / np.outer(x, np.ones(len(s))))
         # aux=sqrt(pi*(log((1+(x*s).^2).*((1+x*s).^2))-2*atan(x*s))./(x*ones(size(s))));
     elif model == 'NFW':
-        v = np.sqrt(4 * np.pi * (np.log(1 + np.outer(x, s) / np.outer(x, np.ones(len(s))) - np.outer(np.ones(len(s)), s)
+        #print("x_NFW = ", x)
+        #print("s_NFW = ", s)
+        v = np.sqrt(4 * np.pi * (np.log(1 + np.outer(x, s) / np.outer(x, np.ones(len(s))) - np.outer(np.ones(len(x)), s)
                                         / (1 + np.outer(x, s)))))
         # aux = sqrt(4 * pi * (log(1 + x * s). / (x * ones(size(s))) - (ones(size(x)) * s). / (1 + x * s)));
+        # aux=sqrt(4*pi*(log(1+x*s)./(x*ones(size(s)))-(ones(size(x))*s)./(1+x*s)));
     return v
 
 def rho(s, galaxdata):

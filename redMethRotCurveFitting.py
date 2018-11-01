@@ -31,7 +31,7 @@ galaxdata = {
     "vvbary": np.array([]),
     "profile": ''
 }
-profiles = ['ISO', 'BUR']#, 'NFW']
+profiles = ['ISO', 'BUR', 'NFW']
 
 for i in dt.galaxlist:
     print(" ****************** GALAXY: ", i, " **********************")
@@ -63,7 +63,7 @@ for i in dt.galaxlist:
         galaxdata["profile"] = p
 
         if n - dt.nu > 0:
-            
+
             ### CALCULATION OF THE LIMITS ###
             limits = calLimits(galaxdata)
             varphiLim0 = limits[0]
@@ -81,17 +81,26 @@ for i in dt.galaxlist:
             Xi = interval[1]
             Yi = interval[2]
             X = np.logspace(np.log10(intervalinf), np.log10(intervalsup), 8)
+
+            ### VARPHI MINIMIZATION ###
+            varphimin = varphiMin(intervalinf, intervalsup, galaxdata)
+            minvarphi = varphimin[0]
+            minvarphiX = varphimin[1]
+            Xj = varphimin[2]
+            print("len(Xj) = ", len(Xj))
+            Yj = varphimin[3]
+            print("len(Yj) = ", len(Yj))
+            #print("minphi = ", interval[3])    ## mínimo valor encontrado en la minimización del intervalo
+            print("minvarphi = ", minvarphi)
+
             plt.semilogx()
-            plt.scatter(X, np.zeros(len(X)))
-            plt.scatter(Xi, Yi)
+            plt.scatter(X, np.zeros(len(X)), marker=3)
+            plt.scatter(Xi, Yi, marker='.')
+            plt.scatter(Xj, Yj, c='r', marker='.')
+            plt.scatter(minvarphiX, minvarphi, c='y', marker='s')
             plt.hlines(varphiLimInf, 10 ** -2, intervalsup)
             plt.hlines(varphiLim0, intervalinf, 10)
             plt.show()
-
-            ### VARPHI MINIMIZATION ###
-            minvarphi = varphiMin(intervalinf, intervalsup, galaxdata)
-            print("minphi = ", interval[3])
-            print("minvarphi = ", minvarphi)
 '''
 # print(WeighProd(np.array([1,2,3]), np.array([1,2,3]), np.array([1,1,1])))
 radii = dt.galaxies["DDO101"]["R"]
