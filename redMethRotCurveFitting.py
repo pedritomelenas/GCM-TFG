@@ -4,6 +4,7 @@ import numpy as np
 import scipy.optimize as op
 import data as dt
 import commonFunctions as cf
+from calLimits import calLimits
 from intervalMinim import intervalMin
 from varphiMinim import varphiMin
 from WeighProd import WeighProd
@@ -26,6 +27,8 @@ galaxdata = {
     "totalnullvbary": False,
     "somenullvbary": False,
     "vones": np.array([]),
+    "vv": np.array([]),
+    "vvbary": np.array([]),
     "profile": ''
 }
 profiles = ['ISO', 'BUR']#, 'NFW']
@@ -42,101 +45,53 @@ for i in dt.galaxlist:
     galaxdata["vbary"] = vbary
     #print("  Vbariónica = ", vbary)
     n = len(radii)
-    galaxdata["vones"] = np.ones(n)
+    vones = np.ones(n)
+    galaxdata["vones"] = vones
     weights = 1 / ((n - dt.nu) * dt.galaxies[i]["errs"] ** 2)
     galaxdata["weights"] = weights
     totalnullvbary = np.sum(vbary) == 0
     galaxdata["totalnullvbary"] = totalnullvbary
     somenullvbary = round(np.prod(vbary)) == 0
     galaxdata["somenullvbary"] = somenullvbary
+    vv = cf.vv(galaxdata)  # vrot * np.diag(weights) * vrot
+    galaxdata["vv"] = vv
+    vvbary = cf.vvbary(galaxdata)  # vbary * np.diag(weights) * vbary
+    galaxdata["vvbary"] = vvbary
+
     for p in profiles:
         print(" ********** PROFILE: ", p, " ************")
         galaxdata["profile"] = p
 
-        vv = cf.vv(galaxdata)  # vrot * np.diag(weights) * vrot
-        vvbary = cf.vvbary(galaxdata)  # vbary * np.diag(weights) * vbary
-        vones = np.ones(n)
-        #print(type(vv))
-
         if n - dt.nu > 0:
-            ginf = cf.ginf(radii, p)
-            g0 = cf.g0(radii, p)
-            # The solution to #34 --> #35 with vbary=0, which is an upper bound for the solutions to #34 --> #35
-            XVbaryNullinf = (cf.WeighProd(vrot, np.sqrt(ginf), weights) / cf.WeighProd(ginf, vones, weights)) ** 2
-            #print("XVbaryNullinf = ", XVbaryNullinf)
-            # The solution to #40 is an upper bound for the solutions to #40
-            XVbaryNull0 = (cf.WeighProd(vrot, np.sqrt(g0), weights) / cf.WeighProd(g0, vones, weights)) ** 2
-            #print("XVbaryNull0 = ", XVbaryNull0)
+            
+            ### CALCULATION OF THE LIMITS ###
+            limits = calLimits(galaxdata)
+            varphiLim0 = limits[0]
+            varphiLimInf = limits[1]
+            #print("Xinf = ", Xinf)
+            #print("X0 = ", X0)
+            print("varphiLimInf", varphiLimInf)
+            print("varphiLim0", varphiLim0)
 
-            if totalnullvbary:
-                # print("if")
-                Xinf = XVbaryNullinf
-                X0 = XVbaryNull0
-            elif somenullvbary: ####################################################################### NO ENTIENDO ESTE CASO ##########
-                # print(round(np.prod(vbary)) == 0)
-                jinf = -3
-                # print(eqVLimInf(10 ** (j) * XVbaryNullinf))
-                # print(eqVLim0(10 ** jinf * XVbaryNullinf))
-                #if galaxdata["profile"] == 'BUR':
-                #    print("ERROR 1: = ", 10 ** jinf * XVbaryNullinf)
-                while cf.eqVLimInf(10 ** jinf * XVbaryNullinf, ginf, galaxdata) > 0:
-                    jinf -= 1
-                j0 = -3
-                while cf.eqVLim0(10 ** j0 * XVbaryNull0, g0, galaxdata) > 0:
-                    j0 -= 1
-                Xinf = op.brentq(cf.eqVLimInf, 10 ** jinf * XVbaryNullinf, XVbaryNullinf)  # Brent's Method (escalar)
-                X0 = op.brentq(cf.eqVLim0, 10 ** j0 * XVbaryNull0, XVbaryNull0)  # Brent's Method (escalar)
+            ### INTERVAL MINIMIZATION ###
+            interval = intervalMin(varphiLim0, varphiLimInf, galaxdata)
+            intervalinf = interval[0][0]
+            intervalsup = interval[0][1]
+            print("[", intervalinf, ", ", intervalsup, "]")
+            Xi = interval[1]
+            Yi = interval[2]
+            X = np.logspace(np.log10(intervalinf), np.log10(intervalsup), 8)
+            plt.semilogx()
+            plt.scatter(X, np.zeros(len(X)))
+            plt.scatter(Xi, Yi)
+            plt.hlines(varphiLimInf, 10 ** -2, intervalsup)
+            plt.hlines(varphiLim0, intervalinf, 10)
+            plt.show()
 
-            else:
-                if cf.eqVLimInf(0, ginf, galaxdata) >= 0:   # <= ? #########################################################################################
-                    Xinf = 0
-                else:
-                    #Xinf, info, ier, msg = op.fsolve(cf.eqVLimInf, XVbaryNullinf / 2, (ginf, galaxdata), full_output=True)  # Solves equation --> #35
-                    Xinf = op.brentq(cf.eqVLimInf, 0, XVbaryNullinf, (ginf, galaxdata))
-                    '''
-                    if galaxdata["profile"] == 'BUR':
-                        print("ERROR 2")
-                        print("ier = ", ier)
-                        print("msg = ", msg)        ######## fsolve no encuentra solución !!!!!!!
-                        '''
-                if cf.eqVLim0(0, g0, galaxdata) >= 0:
-                    X0 = 0
-                else:
-                    X0 = op.brentq(cf.eqVLim0, 0, XVbaryNull0, (g0, galaxdata))
-                    #X0 = op.fsolve(cf.eqVLim0, XVbaryNull0 / 2, (g0, galaxdata))  # Solves equation #38 --> #40
-
-            ## Calculation of the limit value by using Lemma 2.1 and development #16 ##
-            varphiLimInf = vv + vvbary - 2 * cf.WeighProd(vrot, np.sqrt(Xinf * ginf + (vbary ** 2)), weights) + \
-                           Xinf * cf.WeighProd(ginf, vones, weights)
-            # varphiLimInf = vv + vvbary - 2. * cf.WeighProd(vrot, sqrt(X * ginf(radii) + (vbary. ^ 2)), weights) +
-            # X. * cf.WeighProd(ginf(radii), vones, weights)
-
-            ## Calculation of the limit value by using Lemma 2.2 (2.1?) and development #16 ##
-            varphiLim0 = vv + vvbary + X0 * cf.WeighProd(g0, vones, weights) \
-                         - 2 * cf.WeighProd(vrot, np.sqrt(X0 * g0 + (vbary ** 2)), weights)
-
-        #print("Xinf = ", Xinf)
-        #print("X0 = ", X0)
-        print("varphiLimInf", varphiLimInf)
-        print("varphiLim0", varphiLim0)
-
-
-        interval = intervalMin(varphiLim0, varphiLimInf, galaxdata)
-        intervalinf = interval[0][0]
-        intervalsup = interval[0][1]
-        print("[", intervalinf, ", ", intervalsup, "]")
-        Xi = interval[1]
-        Yi = interval[2]
-        X = np.logspace(np.log10(intervalinf), np.log10(intervalsup), 8)
-        plt.semilogx()
-        plt.scatter(X, np.zeros(len(X)))
-        plt.scatter(Xi, Yi)
-        plt.hlines(varphiLimInf, 10 ** -2, intervalsup)
-        plt.hlines(varphiLim0, intervalinf, 10)
-        plt.show()
-        minvarphi = varphiMin(intervalinf, intervalsup, galaxdata)
-        print("minphi = ", interval[3])
-        print("minvarphi = ", minvarphi)
+            ### VARPHI MINIMIZATION ###
+            minvarphi = varphiMin(intervalinf, intervalsup, galaxdata)
+            print("minphi = ", interval[3])
+            print("minvarphi = ", minvarphi)
 '''
 # print(WeighProd(np.array([1,2,3]), np.array([1,2,3]), np.array([1,1,1])))
 radii = dt.galaxies["DDO101"]["R"]

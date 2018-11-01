@@ -52,8 +52,8 @@ def rho(s, galaxdata):
     vHalos = v(galaxdata["radii"], s, galaxdata["profile"])
     # print("vHalos = ", vHalos) # Para s = 10^-12, vHalos = 0
     rhs = WeighProd(vHalos, vHalos, galaxdata["weights"])  # rhs Eq  # 19 and #20 up to multiplicative constant 1/(s^3 CteDim) .
-    if (galaxdata["profile"] == 'BUR'):
-        print("RHS = ", rhs)
+    #if (galaxdata["profile"] == 'BUR'):
+        #print("RHS = ", rhs)
     rhoVbaryNull = galaxdata["CteDim"] * (s ** 3) * (WeighProd(np.dot(np.atleast_2d(galaxdata["vrot"]).T,
                                                                       np.atleast_2d(np.ones(len(s)))),
                                                                vHalos, galaxdata["weights"]) / rhs) ** 2  # Eq #21
@@ -61,8 +61,8 @@ def rho(s, galaxdata):
         aux = rhoVbaryNull
     elif galaxdata["somenullvbary"]:
         rango = np.nonzero(rhs)
-        if (galaxdata["profile"] == 'BUR'):
-            print("RANGO = ", rango)
+        #if (galaxdata["profile"] == 'BUR'):
+            #print("RANGO = ", rango)
         for i in rango:
             def rhoequation(t):
                 return rhs[i] - WeighProd(galaxdata["vrot"], (vHalos[:][i] ** 2) / np.sqrt(t *
@@ -76,11 +76,11 @@ def rho(s, galaxdata):
     else:
         lhs = WeighProd(np.dot(np.atleast_2d(galaxdata["vrot"]).T, np.atleast_2d(np.ones(len(s)))), (vHalos ** 2) /
                         (np.dot(np.atleast_2d(galaxdata["vbary"]).T, np.atleast_2d(np.ones(len(s))))), galaxdata["weights"])
-        if (galaxdata["profile"] == 'BUR'):
-            print("LHS = ", lhs)
+        #if (galaxdata["profile"] == 'BUR'):
+            #print("LHS = ", lhs)
         rango = np.where(rhs < lhs)
-        if (galaxdata["profile"] == 'BUR'):
-            print("RANGO = ", rango)
+        #if (galaxdata["profile"] == 'BUR'):
+            #print("RANGO = ", rango)
         for i in rango[0]:      ## Intentar VECTORIZAR
             #print(i)
             #print(vHalos)

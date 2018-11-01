@@ -22,8 +22,6 @@ def intervalMin(varphiLim0, varphiLimInf, galaxdata):
     intervalinf = -3
     intervalsup = 3
     k = 0
-    if galaxdata["profile"] == 'BUR':
-        print("Llamo a phi en línea 27")
     lastint = phi(np.array([float(10 ** intervalinf)]), galaxdata)
     dir = []
     stop = False
@@ -36,8 +34,6 @@ def intervalMin(varphiLim0, varphiLimInf, galaxdata):
     while maxiter < 100 and direction != 0 and k < 50:
         maxiter += 1
         s = 10**(intervalinf + np.array([-0.2, -0.1, 0.0, 0.1, 0.2]))
-        if galaxdata["profile"] == 'BUR':
-            print("Llamo a phi en línea 41")
         varphi = phi(s, galaxdata)
         if min(varphi) < minphi:
             minphi = min(varphi)
@@ -84,8 +80,6 @@ def intervalMin(varphiLim0, varphiLimInf, galaxdata):
             if stop:
                 direction = 0
                 intervalinf = i
-                if galaxdata["profile"] == 'BUR':
-                    print("Llamo a phi en línea 89")
                 diferencia = abs(phi(np.asarray([10 ** intervalinf]), galaxdata) - varphiLim0)
             else:
                 direction = 1
@@ -101,19 +95,13 @@ def intervalMin(varphiLim0, varphiLimInf, galaxdata):
 
         #print("--- ", abs(phi(np.array([10**intervalinf])) - varphiLim0))
         #print(phi(np.array([10**intervalinf])), " - ", lastint, " = ", abs(phi(np.array([10**intervalinf])) - lastint))
-        if galaxdata["profile"] == 'BUR':
-            print("Llamo a phi en línea 106")
         if abs(phi(np.array([10**intervalinf]), galaxdata) - lastint) < tol:
             #print("SUMA 1")
             k += 1
-            if galaxdata["profile"] == 'BUR':
-                print("Llamo a phi en línea 111")
             if k > 5 and abs(phi(np.asarray([10 ** intervalinf]), galaxdata) - varphiLim0) < 1:
                 #print("SALTO 1")
                 intervalinf = intervalinf + random.uniform(0.7, 0.8) * direction
                 k = 0
-            if galaxdata["profile"] == 'BUR':
-                print("Llamo a phi en línea 117")
             if k >= 25 and abs(phi(np.asarray([10**intervalinf]), galaxdata) - varphiLim0) >= 1:
                 #print("ANULA 1")
                 k = 0
@@ -123,8 +111,6 @@ def intervalMin(varphiLim0, varphiLimInf, galaxdata):
         else:
             #print("ELSE 1")
             k = 0
-        if galaxdata["profile"] == 'BUR':
-            print("Llamo a phi en línea 128")
         lastint = phi(np.array([float(10**intervalinf)]), galaxdata)
         dir.append(direction)
 
@@ -136,8 +122,6 @@ def intervalMin(varphiLim0, varphiLimInf, galaxdata):
     direction = 1
     maxiter = 0
     k = 0
-    if galaxdata["profile"] == 'BUR':
-        print("Llamo a phi en línea 141")
     lastint = phi(np.array([float(10**intervalsup)]), galaxdata)
     dir.clear()
     stop = False
@@ -149,8 +133,6 @@ def intervalMin(varphiLim0, varphiLimInf, galaxdata):
         maxiter += 1
         # [-0.2, -0.15, -0.1, -0.05, 0.0, 0.05, 0.10, 0.15, 0.2]
         s = 10**(intervalsup + np.array([-0.2, -0.1, 0.0, 0.1, 0.2]))
-        if galaxdata["profile"] == 'BUR':
-            print("Llamo a phi en línea 154")
         varphi = phi(s, galaxdata)
         if min(varphi) < minphi:
             minphi = min(varphi)
@@ -187,8 +169,6 @@ def intervalMin(varphiLim0, varphiLimInf, galaxdata):
             if stop:
                 direction = 0
                 intervalsup = i
-                if galaxdata["profile"] == 'BUR':
-                    print("Llamo a phi en línea 191")
                 diferencia = abs(phi(np.asarray([10**intervalsup]), galaxdata) - varphiLimInf)
             else:
                 direction = -1
