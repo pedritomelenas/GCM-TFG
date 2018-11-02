@@ -87,14 +87,14 @@ for i in dt.galaxlist:
             minvarphi = varphimin[0]
             minvarphiX = varphimin[1]
             Xj = varphimin[2]
-            print("len(Xj) = ", len(Xj))
             Yj = varphimin[3]
-            print("len(Yj) = ", len(Yj))
+            forkpoints = varphimin[4]
             #print("minphi = ", interval[3])    ## mínimo valor encontrado en la minimización del intervalo
             print("minvarphi = ", minvarphi)
 
             plt.semilogx()
             plt.scatter(X, np.zeros(len(X)), marker=3)
+            plt.scatter(forkpoints, np.zeros(len(forkpoints)), c='r', marker=3)
             plt.scatter(Xi, Yi, marker='.')
             plt.scatter(Xj, Yj, c='r', marker='.')
             plt.scatter(minvarphiX, minvarphi, c='y', marker='s')

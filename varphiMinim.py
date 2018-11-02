@@ -17,20 +17,26 @@ def getIMD(intizq, intder, galaxdata):
 def varphiMin(intervalinf, intervalsup, galaxdata):
     tol = 10**-8
     subint = np.asarray(np.logspace(np.log10(intervalinf), np.log10(intervalsup), 8))
+    initialsubint = subint
     bestphi = 10**4
     X = []
     Y = []
     subintsize = np.arange(len(subint) - 1)
     s = 0
+    #step = 1
     nfork = 0
+    forkpoints = []
     while s < len(subint) - 1:
-        print("subintervalo ", s)
+        #print("subintervalo ", s)
         intizq = subint[s]
-        intder = subint[s + 1]
+        intder = subint[s+1]
+        if s == nfork + 1:
+            nfork = 0
         M = 1
         lastM = 0
         minphi = 10**4
         k = 0
+        #fork = False
         while abs(M - lastM) > tol:
             #print(k)
             lastM = M
@@ -60,19 +66,25 @@ def varphiMin(intervalinf, intervalsup, galaxdata):
             elif I > M > D:
                 intizq = m
             else:
-                if fork == True and nfork > 10:                                         ########## ARREGLAR ############
-                    print(0)
+                if nfork + 1 > 3:
+                    if random.randint(0, 1):
+                        intder = m
+                    else:
+                        intizq = m
+
                 else:
-                    fork = True
-                    nfork += 1
+                    #fork = True
                     intder = m
-                    print("fork = ", fork)
+                    #print("fork = ", fork)
                     #print("SUBINT LAST = ", subint)
                     #print("s+1 = ", s+1)
                     subint = np.insert(subint, s+1, m)
-                    subint = np.insert(subint, s+2, d)       ## sin esto no hace el fork bien! Falta probar
+                    forkpoints.append(m)
+                    nfork += 1
+                    #step += 1
+                    #print("nfork = ", nfork)
                     #print("SUBINT NEW = ", subint)
-                    print("len(subint) = ", len(subint))
+                    #print("len(subint) = ", len(subint))
             #print("min = ", min([I, M, D]))
             sorted_IMD = sorted(IMD, key=lambda tup: tup[1])
             #print("SORTED_IMD = ", sorted_IMD)
@@ -87,4 +99,4 @@ def varphiMin(intervalinf, intervalsup, galaxdata):
         #print("FORK = ", fork)
         #print("BESTPHI = ", bestphi)
         s += 1
-    return [bestphi, bestphiX, X, Y]
+    return [bestphi, bestphiX, X, Y, forkpoints]
