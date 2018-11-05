@@ -11,7 +11,7 @@ def getIMD(intizq, intder, galaxdata):
     d = random.uniform(m, intder)
     D = phi(np.array([d]), galaxdata)
 
-    return [[i, I], [m, M], [d, D]]
+    return [[i, I], [m, M], [d, D]]     # PROBAR A DEVOLVER DOS LISTAS: [i, m, d]  [I, M, D]
     #return {'I': I, 'i': i, 'M': M, 'm': m, 'D': D, 'd': d}
 
 def varphiMin(intervalinf, intervalsup, galaxdata):
@@ -34,7 +34,15 @@ def varphiMin(intervalinf, intervalsup, galaxdata):
             nfork = 0
         M = 1
         lastM = 0
-        minphi = 10**4
+        izqphi = phi(np.array([intizq]), galaxdata)
+        derphi = phi(np.array([intder]), galaxdata)
+        if izqphi < derphi:
+            minphi = izqphi
+            minphiX = intizq
+        else:
+            minphi = derphi
+            minphiX = intder
+        #print("minphi en el intervalo ", s, " = ", minphi)
         k = 0
         #fork = False
         while abs(M - lastM) > tol:
@@ -91,11 +99,13 @@ def varphiMin(intervalinf, intervalsup, galaxdata):
             if sorted_IMD[0][1] < minphi:
                 minphi = sorted_IMD[0][1]
                 minphiX = sorted_IMD[0][0]
+            #print("minphi en la iteración ", k, "del intervalo ", s, " = ", minphi)
             k += 1
             #print("intervalo = [", intizq, ", ", intder, "]")
         if minphi < bestphi:
             bestphi = minphi
             bestphiX = minphiX
+        #print("BESTPHI EN EL INTERVALO ", s, " = ", bestphi)
         #print("FORK = ", fork)
         #print("BESTPHI = ", bestphi)
         s += 1

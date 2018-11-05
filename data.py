@@ -1,7 +1,8 @@
 import arff
 import numpy as np
 
-galaxlist = ["DDO101", "DDO126", "DDO133", "DDO154", "DDO168"]
+galaxlist = ["DDO101", "DDO126", "DDO133", "DDO154", "DDO168", "DDO210", "DDO216", "F564_v3",
+             "haro29", "ic10", "ic1613", "NGC1569", "NGC2366"]
 galaxies = {}
 for i in galaxlist:
     fp = open("galaxies/"+i+".arff")
