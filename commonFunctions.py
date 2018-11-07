@@ -46,7 +46,7 @@ def v(x, s, model):
     elif model == 'NFW':
         #print("x_NFW = ", x)
         #print("s_NFW = ", s)
-        v = np.sqrt(4 * np.pi * (np.log(1 + np.outer(x, s) / np.outer(x, np.ones(len(s))) - np.outer(np.ones(len(x)), s)
+        v = np.sqrt(4 * np.pi * (np.log(1 + np.outer(x, s)) / np.outer(x, np.ones(len(s))) - (np.outer(np.ones(len(x)), s)
                                         / (1 + np.outer(x, s)))))
         # aux = sqrt(4 * pi * (log(1 + x * s). / (x * ones(size(s))) - (ones(size(x)) * s). / (1 + x * s)));
         # aux=sqrt(4*pi*(log(1+x*s)./(x*ones(size(s)))-(ones(size(x))*s)./(1+x*s)));
