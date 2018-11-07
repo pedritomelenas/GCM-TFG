@@ -26,10 +26,11 @@ def intervalMin(varphiLim0, varphiLimInf, galaxdata):
     dir = []
     stop = False
     i = 0.0
-    X = []
-    Y = []
-    minphi = 10**4
-    minx = 0
+    if galaxdata["graphic"]:
+        X = []
+        Y = []
+    minphi = 10**4  # para devolver el mínimo encontrado en la exploración
+    minx = 0        # para devolver el mínimo encontrado en la exploración
     random.seed(1)
     while maxiter < 100 and direction != 0 and k < 50:
         maxiter += 1
@@ -46,8 +47,9 @@ def intervalMin(varphiLim0, varphiLimInf, galaxdata):
             #print(pos)
             #print(minx)
         eval = abs(varphi - varphiLim0) / varphiLim0
-        X.append(10**(intervalinf + np.array([-0.2, -0.1, 0.0, 0.1, 0.2])))
-        Y.append(varphi)
+        if galaxdata["graphic"]:
+            X.append(10**(intervalinf + np.array([-0.2, -0.1, 0.0, 0.1, 0.2])))
+            Y.append(varphi)
         # [2:5] [0,2]
         # [5:10] [0:5]
         test1 = sum(eval[2:5]) < tol
@@ -140,8 +142,9 @@ def intervalMin(varphiLim0, varphiLimInf, galaxdata):
             pos = (varphi.tolist()).index(minphi)
             minx = s[pos]
         eval = abs(varphi - varphiLimInf) / varphiLimInf    ##  CORREGIDO
-        X.append(10**(intervalsup + np.array([-0.2, -0.1, 0.0, 0.1, 0.2])))
-        Y.append(varphi)
+        if galaxdata["graphic"]:
+            X.append(10**(intervalsup + np.array([-0.2, -0.1, 0.0, 0.1, 0.2])))
+            Y.append(varphi)
 
         # [3:5] [0,3]
         # [5:10] [0:5]
@@ -228,6 +231,10 @@ def intervalMin(varphiLim0, varphiLimInf, galaxdata):
     #print("Tamaño intervalo = ", abs(10**intervalinf - 10**intervalsup))
     #print("minphi = ", minphi, "; minx = ", minx)
     interval = [10**intervalinf, 10**intervalsup]
+    if galaxdata["graphic"]:
+        sol = [interval, X, Y, minphi, minx]
+    else:
+        sol = [interval, minphi, minx]
 
-    return [interval, X, Y, minphi, minx]
+    return sol
 

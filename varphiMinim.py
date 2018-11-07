@@ -19,8 +19,9 @@ def varphiMin(intervalinf, intervalsup, galaxdata):
     subint = np.asarray(np.logspace(np.log10(intervalinf), np.log10(intervalsup), 8))
     initialsubint = subint
     bestphi = 10**4
-    X = []
-    Y = []
+    if galaxdata["graphic"]:
+        X = []
+        Y = []
     subintsize = np.arange(len(subint) - 1)
     s = 0
     #step = 1
@@ -59,12 +60,13 @@ def varphiMin(intervalinf, intervalsup, galaxdata):
             d = IMD[2][0]
             D = IMD[2][1]
             #print("D = ", D)
-            Y.append(M)
-            Y.append(I)
-            Y.append(D)
-            X.append(m)
-            X.append(i)
-            X.append(d)
+            if galaxdata["graphic"]:
+                Y.append(M)
+                Y.append(I)
+                Y.append(D)
+                X.append(m)
+                X.append(i)
+                X.append(d)
             '''if s_i >= 2:
                 print("[m, M] = [", m, ", ", M, "]")
                 print("[i, I] = [", i, ", ", I, "]")
@@ -109,4 +111,8 @@ def varphiMin(intervalinf, intervalsup, galaxdata):
         #print("FORK = ", fork)
         #print("BESTPHI = ", bestphi)
         s += 1
-    return [bestphi, bestphiX, X, Y, forkpoints]
+        if galaxdata["graphic"]:
+            sol = [bestphi, bestphiX, X, Y, forkpoints]
+        else:
+            sol = [bestphi, bestphiX, forkpoints]
+    return sol

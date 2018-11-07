@@ -30,7 +30,8 @@ galaxdata = {
     "vones": np.array([]),
     "vv": np.array([]),
     "vvbary": np.array([]),
-    "profile": ''
+    "profile": '',
+    "graphic": False
 }
 profiles = ['ISO', 'BUR', 'NFW']
 start_time = time.time()
@@ -59,6 +60,7 @@ for i in dt.galaxlist:
     galaxdata["vv"] = vv
     vvbary = cf.vvbary(galaxdata)  # vbary * np.diag(weights) * vbary
     galaxdata["vvbary"] = vvbary
+    galaxdata["graphic"] = True
 
     for p in profiles:
         print(" ********** PROFILE: ", p, " ************")
@@ -79,32 +81,41 @@ for i in dt.galaxlist:
             intervalinf = interval[0][0]
             intervalsup = interval[0][1]
             print("[", intervalinf, ", ", intervalsup, "]")
-            Xi = interval[1]
-            Yi = interval[2]
+            if galaxdata["graphic"]:
+                Xi = interval[1]
+                Yi = interval[2]
+                intminvarphi = interval[3]
+                intminvarphiX = interval[4]
+            else:
+                intminvarphi = interval[1]
+                intminvarphiX = interval[2]
             X = np.logspace(np.log10(intervalinf), np.log10(intervalsup), 8)
 
             ### VARPHI MINIMIZATION ###
-            varphimin = varphiMin(intervalinf, intervalsup, galaxdata)
-            minvarphi = varphimin[0]
-            minvarphiX = varphimin[1]
-            Xj = varphimin[2]
-            Yj = varphimin[3]
-            forkpoints = varphimin[4]
+            pmin = varphiMin(intervalinf, intervalsup, galaxdata)
+            minvarphi = pmin[0]
+            minvarphiX = pmin[1]
+            if galaxdata["graphic"]:
+                Xj = pmin[2]
+                Yj = pmin[3]
+                forkpoints = pmin[4]
+            else:
+                forkpoints = pmin[2]
             #print("minphi = ", interval[3])    ## mínimo valor encontrado en la minimización del intervalo
             print("minvarphi = ", minvarphi)
-
-            plt.semilogx()
-            plt.title("Galaxia "+i+" con perfil "+p)
-            plt.scatter(X, np.zeros(len(X)), marker=3)
-            plt.scatter(forkpoints, np.zeros(len(forkpoints)), c='r', marker=3)
-            plt.scatter(Xi, Yi, marker='.')
-            plt.scatter(Xj, Yj, c='r', marker='.')
-            plt.scatter(minvarphiX, minvarphi, c='y', marker='s')
-            plt.hlines(varphiLimInf, 10 ** -2, intervalsup)
-            plt.hlines(varphiLim0, intervalinf, 10)
-            #plt.show()
-            plt.savefig("C:/Users/marin/PycharmProjects/TFG/galaxies/graphics/" + p + '-' + i + '.png')
-            plt.gcf().clear()
+            if galaxdata["graphic"]:
+                plt.semilogx()
+                plt.title("Galaxia "+i+" con perfil "+p)
+                plt.scatter(X, np.zeros(len(X)), marker=3)
+                plt.scatter(forkpoints, np.zeros(len(forkpoints)), c='r', marker=3)
+                plt.scatter(Xi, Yi, marker='.')
+                plt.scatter(Xj, Yj, c='r', marker='.')
+                plt.scatter(minvarphiX, minvarphi, c='y', marker='s')
+                plt.hlines(varphiLimInf, 10 ** -2, intervalsup)
+                plt.hlines(varphiLim0, intervalinf, 10)
+                #plt.show()
+                plt.savefig("C:/Users/marin/PycharmProjects/TFG/galaxies/graphics/" + p + '-' + i + '.png')
+                plt.gcf().clear()
         pend = time.time()
         print("Tiempo para el perfil ", p, " para la galaxia ", i, " = ", pend - pstart, " segundos")
     iend = time.time()
