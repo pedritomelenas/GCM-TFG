@@ -1,3 +1,5 @@
+## A BORRAR ##
+
 import random
 import numpy as np
 from redMethRotCurveFitting import phi, varphiLimInf

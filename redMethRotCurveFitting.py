@@ -1,14 +1,9 @@
-import random
-import arff
 import numpy as np
-import scipy.optimize as op
 import data as dt
 import commonFunctions as cf
 from calLimits import calLimits
 from intervalMinim import intervalMin
 from varphiMinim import varphiMin
-from WeighProd import WeighProd
-from collections import deque
 import matplotlib.pyplot as plt
 import time
 
@@ -19,7 +14,7 @@ import time
 # print(1/((n-nu)*errs[2]**2))
 # print(weights)
 #####################_____________________________________#######################
-galaxdata = {
+galaxdata = {                          # Colocar en data.py?
     "radii": np.array([]),
     "vrot": np.array([]),
     "vbary": np.array([]),
@@ -33,7 +28,7 @@ galaxdata = {
     "profile": '',
     "graphic": False
 }
-profiles = ['ISO', 'BUR', 'NFW']
+profiles = ['ISO', 'BUR', 'NFW']       # Colocar en data.py?
 start_time = time.time()
 for i in dt.galaxlist:
     istart = time.time()
@@ -60,7 +55,7 @@ for i in dt.galaxlist:
     galaxdata["vv"] = vv
     vvbary = cf.vvbary(galaxdata)  # vbary * np.diag(weights) * vbary
     galaxdata["vvbary"] = vvbary
-    galaxdata["graphic"] = True
+    #galaxdata["graphic"] = True
 
     for p in profiles:
         print(" ********** PROFILE: ", p, " ************")
@@ -109,12 +104,12 @@ for i in dt.galaxlist:
                 plt.scatter(X, np.zeros(len(X)), marker=3)
                 plt.scatter(forkpoints, np.zeros(len(forkpoints)), c='r', marker=3)
                 plt.scatter(Xi, Yi, marker='.')
-                plt.scatter(Xj, Yj, c='r', marker='.')
-                plt.scatter(minvarphiX, minvarphi, c='y', marker='s')
+                plt.scatter(Xj, Yj, c='y', marker='.')
+                plt.scatter(minvarphiX, minvarphi, c='r', marker='s')
                 plt.hlines(varphiLimInf, 10 ** -2, intervalsup)
                 plt.hlines(varphiLim0, intervalinf, 10)
                 #plt.show()
-                plt.savefig("C:/Users/marin/PycharmProjects/TFG/galaxies/graphics/" + p + '-' + i + '.png')
+                plt.savefig("galaxies/graphics/" + p + '-' + i + '.png')
                 plt.gcf().clear()
         pend = time.time()
         print("Tiempo para el perfil ", p, " para la galaxia ", i, " = ", pend - pstart, " segundos")

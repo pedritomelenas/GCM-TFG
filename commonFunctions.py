@@ -1,5 +1,4 @@
 import numpy as np
-#from data import radii, weights, CteDim, totalnullvbary, somenullvbary, vbary, vrot
 import scipy.optimize as op
 
 def WeighProd(x, y, sigmas):

@@ -1,37 +1,138 @@
 import random
 import numpy as np
+from math import trunc
 from commonFunctions import phi
-import time
-import matplotlib.pyplot as plt
 
-#eval = (phi(10**(intervalinf + np.array([-0.2, -0.1, 0.0, 0.1, 0.2]))) - varphiLim0) / varphiLim0
-#print(eval)
-#print(eval[2:5])
+tol = 10 ** -2
 
+def inftestElementwise(eval):
+    test1 = True
+    test2 = True
+    l = len(eval)
+    for e in eval[trunc(l/2):l]:
+        if e > tol:
+            test1 = False
+    for e in eval[0:trunc(l/2)]:
+        if e > tol:
+            test2 = False
+    return test1, test2
+
+def suptestElementwise(eval):
+    test1 = True
+    test2 = True
+    l = len(eval)
+    for e in eval[round(l/2):l]:
+        if e > tol:
+            test2 = False
+    for e in eval[0:round(l/2)]:
+        if e > tol:
+            test1 = False
+    return test1, test2
+
+def inftestElementsum(eval):
+    l = len(eval)
+    test1 = sum(eval[trunc(l/2):l]) < tol
+    test2 = sum(eval[0:trunc(l/2)]) < tol
+    return test1, test2
+
+def suptestElementsum(eval):
+    l = len(eval)
+    test1 = sum(eval[0:round(l/2)]) < tol
+    test2 = sum(eval[round(l/2):l]) < tol
+    return test1, test2
+
+def infConditions(test1, test2, intervalinf, stop, i):
+    if (not test1) and test2:
+        stop = True  # Podemos convertir stop en un contador, en lugar de un booleano, para
+        direction = -1  # establecer un patrón más específico
+        i = intervalinf
+        intervalinf = intervalinf + random.uniform(0.2, 0.6) * direction  # En cada iteración, intervalinf
+        # direction = 0                                                          # varía con una dirección determinada
+    elif (not test1) and (not test2):  # pero con módulo aleatorio
+        if stop:
+            stop = False
+        direction = -1
+        intervalinf = intervalinf + random.uniform(0.2, 0.3) * direction
+        # intervalinf = intervalinf + 0.3 * direction
+    elif test1 and test2:
+        if stop:
+            direction = 0
+            intervalinf = i
+        else:
+            direction = 1
+            intervalinf = intervalinf + random.uniform(0.2, 0.3) * direction
+    else:
+        if stop:
+            stop = False
+        direction = -1
+        intervalinf = intervalinf + random.uniform(0.2, 0.3) * direction
+
+    return intervalinf, direction, stop, i
+
+def supConditions(test1, test2, intervalsup, stop,i):
+    if (not test1) and test2:
+        stop = True  # Podemos convertir stop en un contador, en lugar de un booleano, pera
+        direction = 1  # establecer un patrón más específico --> agrandar el boleano: 0.3 - 0.6
+        i = intervalsup
+        intervalsup = intervalsup + random.uniform(0.2, 0.6) * direction  # En cada iteración, intervalsup
+        #  varía con una dirección determinada
+    elif (not test1) and (not test2):
+        if stop:
+            stop = False
+        direction = 1
+        intervalsup = intervalsup + random.uniform(0.2, 0.3) * direction
+    elif test1 and test2:
+        if stop:
+            direction = 0
+            intervalsup = i
+        else:
+            direction = -1
+            intervalsup = intervalsup + random.uniform(0.2, 0.3) * direction
+    else:
+        if stop:
+            stop = False
+        direction = 1
+        intervalsup = intervalsup + random.uniform(0.2, 0.3) * direction
+
+    return intervalsup, direction, stop, i
+
+def jumpCondition(twoclosevar, varLimdistance, interval, direction, k):
+    jump = False
+    if twoclosevar:
+        k += 1
+        if k > 5 and varLimdistance < 1:
+            jump = True
+            interval = interval + random.uniform(0.7, 0.8) * direction
+            k = 0
+        if k >= 25 and varLimdistance >= 1:
+            k = 0
+    else:
+        k = 0
+    return jump, interval, k
 
 ## IDEA:
 ## 1) APROVECHAR ESTE ALGORITMO PARA DETECTAR, SI ES QUE SE DA, LA EXISTENCIA DEL MÍNIMO ##
 ## Si varphiLim0 < varphiLimInf, basta con que exista un s tal que varphi(s) < varphiLim0 para asegurar la existencia del límite
 ## Si varphiLimInf < varphiLim0, basta con que exista un s tal que varphi(s) < varphiLimInf para asegurar la existencia del límite
 ## 2) APROVECHAR ESTE ALGORITMO PARA ALMACENAR EL MÍNIMO EVALUADO HASTA EL MOMENTO <-- Hecho (quizás no haya merecido la pena => Revisar)
-
 def intervalMin(varphiLim0, varphiLimInf, galaxdata):
-    tol = 10 ** -2
-    maxiter = 0
-    direction = -1
-    intervalinf = -3
-    intervalsup = 3
-    k = 0
-    lastint = phi(np.array([float(10 ** intervalinf)]), galaxdata)
-    dir = []
-    stop = False
-    i = 0.0
     if galaxdata["graphic"]:
         X = []
         Y = []
     minphi = 10**4  # para devolver el mínimo encontrado en la exploración
     minx = 0        # para devolver el mínimo encontrado en la exploración
     random.seed(1)
+
+    # INTERVALO INFERIOR #
+    maxiter = 0
+    direction = -1
+    intervalinf = -3
+    k = 0
+    lastint = phi(np.array([float(10 ** intervalinf)]), galaxdata)
+    dir = []
+    stop = False
+    i = 0.0
+
     while maxiter < 100 and direction != 0 and k < 50:
         maxiter += 1
         s = 10**(intervalinf + np.array([-0.2, -0.1, 0.0, 0.1, 0.2]))
@@ -41,96 +142,32 @@ def intervalMin(varphiLim0, varphiLimInf, galaxdata):
             minphi = min(varphi)
             pos = (varphi.tolist()).index(minphi)
             minx = s[pos]
-            #print("s = ", s)
-            #print("varphi = ", varphi)
-            #print(minphi)
-            #print(pos)
-            #print(minx)
         eval = abs(varphi - varphiLim0) / varphiLim0
         if galaxdata["graphic"]:
             X.append(10**(intervalinf + np.array([-0.2, -0.1, 0.0, 0.1, 0.2])))
             Y.append(varphi)
-        # [2:5] [0,2]
-        # [5:10] [0:5]
-        test1 = sum(eval[2:5]) < tol
-        test2 = sum(eval[0:2]) < tol
-        '''
-        test1 = True                    # En vez de considerar la suma de los elementos de eval, se considera
-        test2 = True                    # cada uno de forma independiente
-        for e in eval[2:5]:
-            if e > tol:
-                test1 = False
-        for e in eval[0:2]:
-            if e > tol:
-                test2 = False
-        '''
-        if test1 == 0 and test2 == 1:
-            opcion = 1
-            stop = True                 # Podemos convertir stop en un contador, en lugar de un booleano, para
-            direction = -1              # establecer un patrón más específico
-            i = intervalinf
-            intervalinf = intervalinf + random.uniform(0.2, 0.6) * direction        # En cada iteración, intervalinf
-            #direction = 0                                                          # varía con una dirección determinada
-        elif test1 == 0 and test2 == 0:                                             # pero con módulo aleatorio
-            opcion = 2
-            if stop:
-                stop = False
-            direction = -1
-            intervalinf = intervalinf + random.uniform(0.2, 0.3) * direction
-            #intervalinf = intervalinf + 0.3 * direction
-        elif test1 == 1 and test2 == 1:
-            opcion = 3
-            if stop:
-                direction = 0
-                intervalinf = i
-                diferencia = abs(phi(np.asarray([10 ** intervalinf]), galaxdata) - varphiLim0)
-            else:
-                direction = 1
-                intervalinf = intervalinf + random.uniform(0.2, 0.3) * direction
-            #intervalinf = intervalinf + 0.3 * direction
-        else:
-            opcion = 4
-            if stop:
-                stop = False
-            direction = -1
-            intervalinf = intervalinf + random.uniform(0.2, 0.3) * direction
-            #intervalinf = intervalinf + 0.3 * direction
 
-        #print("--- ", abs(phi(np.array([10**intervalinf])) - varphiLim0))
-        #print(phi(np.array([10**intervalinf])), " - ", lastint, " = ", abs(phi(np.array([10**intervalinf])) - lastint))
-        if abs(phi(np.array([10**intervalinf]), galaxdata) - lastint) < tol:
-            #print("SUMA 1")
-            k += 1
-            if k > 5 and abs(phi(np.asarray([10 ** intervalinf]), galaxdata) - varphiLim0) < 1:
-                #print("SALTO 1")
-                intervalinf = intervalinf + random.uniform(0.7, 0.8) * direction
-                k = 0
-            if k >= 25 and abs(phi(np.asarray([10**intervalinf]), galaxdata) - varphiLim0) >= 1:
-                #print("ANULA 1")
-                k = 0
-            #print("opcion = ", opcion)
-            #print("intervalinf = ", intervalinf)
-            #dir.append(direction)
+        test1, test2 = inftestElementsum(eval)
+        intervalinf, direction, stop, i = infConditions(test1, test2, intervalinf, stop, i)
+        var = phi(np.asarray([10 ** intervalinf]), galaxdata)
+        twoclosevar = abs(var - lastint) < tol
+        varLimdistance = abs(var - varphiLim0)
+        jump, intervalinf, k = jumpCondition(twoclosevar, varLimdistance, intervalinf, direction, k)
+        if jump:
+            lastint = phi(np.asarray([float(10 ** intervalinf)]), galaxdata)
         else:
-            #print("ELSE 1")
-            k = 0
-        lastint = phi(np.array([float(10**intervalinf)]), galaxdata)
-        dir.append(direction)
+            lastint = var
 
-    #print("maxiter = ", maxiter)
-    #print("k = ", k)
-    #print("dir = ", dir)
-    #print("direction = ", direction)
-    #print("diferencia = ", diferencia)
-    direction = 1
+
+    # INTERVALO SUPERIOR #
     maxiter = 0
+    direction = 1
+    intervalsup = 3
     k = 0
     lastint = phi(np.array([float(10**intervalsup)]), galaxdata)
     dir.clear()
     stop = False
     i = 0.0
-    dir.clear()
-
 
     while maxiter < 100 and direction != 0 and k < 50:  # Nueva condición de parada --> relacionar con el límite
         maxiter += 1
@@ -141,95 +178,27 @@ def intervalMin(varphiLim0, varphiLimInf, galaxdata):
             minphi = min(varphi)
             pos = (varphi.tolist()).index(minphi)
             minx = s[pos]
-        eval = abs(varphi - varphiLimInf) / varphiLimInf    ##  CORREGIDO
+        eval = abs(varphi - varphiLimInf) / varphiLimInf
         if galaxdata["graphic"]:
             X.append(10**(intervalsup + np.array([-0.2, -0.1, 0.0, 0.1, 0.2])))
             Y.append(varphi)
 
-        # [3:5] [0,3]
-        # [5:10] [0:5]
-        #test1 = sum(eval[0:3]) < tol
-        #test2 = sum(eval[2:5]) < tol
-        test1 = True        # En vez de considerar la suma de los elementos de eval, se considera
-        test2 = True        # cada uno de forma independiente
-        for e in eval[3:5]:
-            if e > tol:
-                test2 = False
-        for e in eval[0:3]:
-            if e > tol:
-                test1 = False
-        if test1 == 0 and test2 == 1:
-            stop = True         # Podemos convertir stop en un contador, en lugar de un booleano, pera
-            direction = 1       # establecer un patrón más específico --> agrandar el boleano: 0.3 - 0.6
-            i = intervalsup
-            intervalsup = intervalsup + random.uniform(0.2, 0.6) * direction            # En cada iteración, intervalsup
-            # direction = 0                                                             # varía con una dirección determinada
-        elif test1 == 0 and test2 == 0:
-            if stop:
-                stop = False
-            direction = 1
-            intervalsup = intervalsup + random.uniform(0.2, 0.3) * direction
-        elif test1 == 1 and test2 == 1:
-            if stop:
-                direction = 0
-                intervalsup = i
-                diferencia = abs(phi(np.asarray([10**intervalsup]), galaxdata) - varphiLimInf)
-            else:
-                direction = -1
-                intervalsup = intervalsup + random.uniform(0.2, 0.3) * direction
+        test1, test2 = suptestElementwise(eval)
+        intervalsup, direction, stop, i = supConditions(test1, test2, intervalsup, stop, i)
+        var = phi(np.asarray([10 ** intervalsup]), galaxdata)
+        twoclosevar = abs(var - lastint) < tol
+        varLimdistance = abs(var - varphiLimInf)
+        jump, intervalsup, k = jumpCondition(twoclosevar, varLimdistance, intervalsup, direction, k)
+        if jump:
+            lastint = phi(np.asarray([float(10 ** intervalsup)]), galaxdata)
         else:
-            if stop:
-                stop = False
-            direction = 1
-            intervalsup = intervalsup + random.uniform(0.2, 0.3) * direction
-
-        #print("--- ", abs(phi(np.array([10**intervalsup])) - varphiLimInf))
-        #print(phi(np.array([10**intervalsup])), " - ", varphiLimInf, " = ", abs(phi(np.array([10**intervalsup])) - varphiLimInf))
-        if abs(phi(np.array([10**intervalsup]), galaxdata) - lastint) < tol:
-            #print("SUMA 2")
-            k += 1
-            if k > 5 and abs(phi(np.asarray([10**intervalsup]), galaxdata) - varphiLimInf) < 1:
-                #print("SALTO 2")
-                intervalsup = intervalsup + random.uniform(0.7, 0.8) * direction
-                k = 0
-            if k >= 25 and abs(phi(np.asarray([10**intervalsup]), galaxdata) - varphiLimInf) > 1:
-                k = 0
-                #print("ANULA 2")
-            #print("intervalsup = ", intervalsup)
-            #dir.append(direction)
-        else:
-            #print("ELSE 2")
-            k = 0
-        lastint = phi(np.array([float(10**intervalsup)]), galaxdata)
-        dir.append(direction)
-
-    #print("k = ", k)
-    #print("diferencia = ", diferencia)
-    #print("dir = ", dir)
-    #print("maxiter = ", maxiter)
-    #print("direction = ", direction)
-    #print("dir = ", dir)
-    '''
-    Xa = np.asarray(X)
-    Ya = np.asarray(Y)
-    plt.semilogx()
-    plt.semilogy()
-    plt.scatter(X, Y)
-    plt.hlines(varphiLimInf, 10**-2, 1000)
-    plt.hlines(varphiLim0, 10**-5, 10)
-    plt.vlines(10**intervalsup, 1, 100)
-    plt.vlines(10**intervalinf, 1, 100)
-    plt.show()
-    '''
+            lastint = var
 
     if intervalinf > intervalsup:
         print("WARNING: The interval selection module has not worked properly")
         intervalinf = -3
         intervalsup = 5
 
-    #print("[", 10**intervalinf, ", ", 10**intervalsup, "]")
-    #print("Tamaño intervalo = ", abs(10**intervalinf - 10**intervalsup))
-    #print("minphi = ", minphi, "; minx = ", minx)
     interval = [10**intervalinf, 10**intervalsup]
     if galaxdata["graphic"]:
         sol = [interval, X, Y, minphi, minx]
