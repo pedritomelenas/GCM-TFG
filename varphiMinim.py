@@ -11,8 +11,7 @@ def getIMD(intizq, intder, galaxdata):
     d = random.uniform(m, intder)
     D = phi(np.array([d]), galaxdata)
 
-    return [[i, I], [m, M], [d, D]]     # PROBAR A DEVOLVER DOS LISTAS: [i, m, d]  [I, M, D]
-    #return {'I': I, 'i': i, 'M': M, 'm': m, 'D': D, 'd': d}
+    return [[i, I], [m, M], [d, D]]
 
 def varphiMin(intervalinf, intervalsup, galaxdata):
     tol = 10**-8

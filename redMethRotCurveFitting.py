@@ -7,13 +7,6 @@ from varphiMinim import varphiMin
 import matplotlib.pyplot as plt
 import time
 
-
-#####################________ REVISAR PRECISIÓN __________######################
-# print(1/((n-nu)*errs[0]**2))
-# print(1/((n-nu)*errs[1]**2))
-# print(1/((n-nu)*errs[2]**2))
-# print(weights)
-#####################_____________________________________#######################
 galaxdata = {                          # Colocar en data.py?
     "radii": np.array([]),
     "vrot": np.array([]),
@@ -35,13 +28,10 @@ for i in dt.galaxlist:
     print(" ****************** GALAXY: ", i, " **********************")
     radii = dt.galaxies[i]["R"]
     galaxdata["radii"] = radii
-    #print("  R = ", radii)
     vrot = dt.galaxies[i]["vrot"]
     galaxdata["vrot"] = vrot
-    #print("  Vrotacional = ", vrot)
     vbary = dt.galaxies[i]["vbary"]
     galaxdata["vbary"] = vbary
-    #print("  Vbariónica = ", vbary)
     n = len(radii)
     vones = np.ones(n)
     galaxdata["vones"] = vones
@@ -51,9 +41,9 @@ for i in dt.galaxlist:
     galaxdata["totalnullvbary"] = totalnullvbary
     somenullvbary = round(np.prod(vbary)) == 0
     galaxdata["somenullvbary"] = somenullvbary
-    vv = cf.vv(galaxdata)  # vrot * np.diag(weights) * vrot
+    vv = cf.vv(galaxdata)
     galaxdata["vv"] = vv
-    vvbary = cf.vvbary(galaxdata)  # vbary * np.diag(weights) * vbary
+    vvbary = cf.vvbary(galaxdata)
     galaxdata["vvbary"] = vvbary
     #galaxdata["graphic"] = True
 
@@ -96,7 +86,6 @@ for i in dt.galaxlist:
                 forkpoints = pmin[4]
             else:
                 forkpoints = pmin[2]
-            #print("minphi = ", interval[3])    ## mínimo valor encontrado en la minimización del intervalo
             print("minvarphi = ", minvarphi)
             if galaxdata["graphic"]:
                 plt.semilogx()
@@ -108,7 +97,6 @@ for i in dt.galaxlist:
                 plt.scatter(minvarphiX, minvarphi, c='r', marker='s')
                 plt.hlines(varphiLimInf, 10 ** -2, intervalsup)
                 plt.hlines(varphiLim0, intervalinf, 10)
-                #plt.show()
                 plt.savefig("galaxies/graphics/" + p + '-' + i + '.png')
                 plt.gcf().clear()
         pend = time.time()
