@@ -103,8 +103,8 @@ for i in dt.galaxlist:
                 plt.title("Galaxia "+i+" con perfil "+p)
                 plt.scatter(X, np.zeros(len(X)), marker=3)
                 plt.scatter(forkpoints, np.zeros(len(forkpoints)), c='r', marker=3)
-                plt.scatter(Xi, Yi, marker='.')
-                plt.scatter(Xj, Yj, c='y', marker='.')
+                plt.scatter(Xi, Yi, c='g', marker='.')
+                plt.scatter(Xj, Yj, c='b', marker='.')
                 plt.scatter(minvarphiX, minvarphi, c='r', marker='s')
                 plt.hlines(varphiLimInf, 10 ** -2, intervalsup)
                 plt.hlines(varphiLim0, intervalinf, 10)
@@ -117,21 +117,3 @@ for i in dt.galaxlist:
     print("Tiempo para la galaxia ", i, " = ", iend - istart, " segundos")
 endtime = time.time()
 print("Tiempo total = ", endtime - start_time, " segundos")
-'''
-
-    ###############################################
-    ############### Tabu Search ###################
-    ###############################################
-
-    s0 = random.uniform(0, 10**3)   # solución inicial aleatoria
-    Nv = 5  # mínimo número de soluciones en la vecindad actual
-    Nmin = 10   # mínimo número de soluciones en la lista tabú
-    Nmax = 100  # número máximo de soluciones en la lista tabú
-    K = 15000   # máximo número de iteraciones
-    e = 10**(-3)    # umbral de precisión
-    M = 10  # máximo número de soluciones encontradas
-    N = 30  # máximo número de iteraciones sin que la solución óptima cambie
-
-    tabulist = deque()
-    #print(tabulist)
-'''

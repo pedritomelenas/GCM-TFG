@@ -130,12 +130,4 @@ def vvbary(galaxdata):
 
 def phi(s, galaxdata):
     phi = vv(galaxdata) + vvbary(galaxdata) + alphaMV(s, galaxdata)
-    '''
-    if galaxdata["profile"] == 'ISO':
-        phi = vv(galaxdata) + vvbary(galaxdata) + alphaMV(s, 'ISO', galaxdata)
-    elif galaxdata["profile"] == 'BUR':
-        phi = vv(galaxdata) + vvbary(galaxdata) + alphaMV(s, 'BUR', galaxdata)
-    elif galaxdata["profile"] == 'NFW':
-        phi = vv(galaxdata) + vvbary(galaxdata) + alphaMV(s, 'NFW', galaxdata)
-    '''
     return phi
