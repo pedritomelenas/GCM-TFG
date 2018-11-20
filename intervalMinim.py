@@ -136,7 +136,6 @@ def intervalMin(varphiLim0, varphiLimInf, galaxdata):
     while maxiter < 100 and direction != 0 and k < 50:
         maxiter += 1
         s = 10**(intervalinf + np.array([-0.2, -0.1, 0.0, 0.1, 0.2]))
-        #print("ssssss = ", s)
         varphi = phi(s, galaxdata)
         if min(varphi) < minphi:
             minphi = min(varphi)
@@ -147,7 +146,7 @@ def intervalMin(varphiLim0, varphiLimInf, galaxdata):
             X.append(10**(intervalinf + np.array([-0.2, -0.1, 0.0, 0.1, 0.2])))
             Y.append(varphi)
 
-        test1, test2 = inftestElementsum(eval)
+        test1, test2 = inftestElementwise(eval)
         intervalinf, direction, stop, i = infConditions(test1, test2, intervalinf, stop, i)
         var = phi(np.asarray([10 ** intervalinf]), galaxdata)
         twoclosevar = abs(var - lastint) < tol
@@ -206,4 +205,3 @@ def intervalMin(varphiLim0, varphiLimInf, galaxdata):
         sol = [interval, minphi, minx]
 
     return sol
-
