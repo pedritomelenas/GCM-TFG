@@ -21,7 +21,7 @@ galaxdata = {                          # Colocar en data.py?
     "profile": '',
     "graphic": False
 }
-profiles = ['ISO', 'BUR', 'NFW']       # Colocar en data.py?
+profiles = ['ISO','BUR', 'NFW']       # Colocar en data.py?
 start_time = time.time()
 for i in dt.galaxlist:
     istart = time.time()
@@ -45,7 +45,7 @@ for i in dt.galaxlist:
     galaxdata["vv"] = vv
     vvbary = cf.vvbary(galaxdata)
     galaxdata["vvbary"] = vvbary
-    #galaxdata["graphic"] = True
+    galaxdata["graphic"] = True
 
     for p in profiles:
         print(" ********** PROFILE: ", p, " ************")
@@ -87,18 +87,22 @@ for i in dt.galaxlist:
             print("minvarphi = ", minvarphi)
             if galaxdata["graphic"]:
                 plt.semilogx()
+                #X = np.logspace(-5, 3, 1000)               # Gráfica de ejemplo
                 plt.title("Galaxia "+i+" con perfil "+p)
+                #plt.plot(X, cf.phi(X, galaxdata), 'k')     # Gráfica de ejemplo
+                plt.xlabel("s (parámetro de escala)")      # Gráfica de ejemplo
+                plt.ylabel(r"$\varphi(s)$")                # Gráfica de ejemplo
                 plt.vlines(intervalinf, -0.1, 0.1)
                 plt.vlines(intervalsup, -0.1, 0.1)
                 plt.hlines(-0.05, intervalinf, intervalsup)
                 plt.scatter(X, np.zeros(len(X)), color='black', marker=3)
                 #plt.scatter(forkpoints, np.zeros(len(forkpoints)), c='r', marker=3)
-                plt.scatter(Xi, Yi, c='r', marker='.')
-                plt.scatter(Xj, Yj, c='b', marker='.', linewidths=0.01)
-                #plt.scatter(minvarphiX, minvarphi, c='c', marker='*', linewidths=2)
-                #plt.hlines(varphiLimInf, 10 ** -2, intervalsup)
-                #plt.hlines(varphiLim0, intervalinf, 10)
-                plt.savefig("galaxies/graphics/" + p + '-' + i + '-varphimin.png')
+                plt.scatter(Xi, Yi, c='r', marker='.')                      # Exploración de la minimización del intervalo
+                plt.scatter(Xj, Yj, c='b', marker='.', linewidths=0.01)     # Exploración de la minimización de varphi
+                plt.scatter(minvarphiX, minvarphi, c='c', marker='*', linewidths=2)     # Mínimo de varphi
+                #plt.hlines(varphiLimInf, 10 ** -2, intervalsup)        # Límite en infinito
+                #plt.hlines(varphiLim0, intervalinf, 10)                # Límite en 0
+                plt.savefig("galaxies/graphics/" + p + '-' + i + '.png')
                 plt.gcf().clear()
         pend = time.time()
         print("Tiempo para el perfil ", p, " para la galaxia ", i, " = ", pend - pstart, " segundos")

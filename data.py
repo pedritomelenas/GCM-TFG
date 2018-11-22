@@ -2,11 +2,11 @@
 from scipy.io import arff
 import numpy as np
 
-galaxlist = ["DDO43", "DDO46", "DDO47"
-             #, "DDO52", "DDO53", "DDO70", "DDO87", "DDO101", "DDO126",
-             #"DDO133", "DDO154", "DDO168", "DDO210", "DDO216", "F564_v3", "haro29", "ic10", "ic1613",
-             #"NGC1569", "NGC2366", "NGC3738", "UGC8508"
-              ]
+galaxlist = [
+            "DDO43", "DDO46", "DDO47", "DDO52", "DDO53", "DDO70", "DDO87", "DDO101", "DDO126",
+             "DDO133", "DDO154", "DDO168", "DDO210", "DDO216", "F564_v3", "haro29", "haro36", "ic10", "ic1613",
+             "NGC1569", "NGC2366", "NGC3738", "UGC8508"
+            ]
 galaxies = {}
 for i in galaxlist:
     fp = open("galaxies/"+i+".arff")
