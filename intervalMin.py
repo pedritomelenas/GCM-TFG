@@ -1,4 +1,5 @@
-## A BORRAR ##
+
+################################# DESCARTAR ##################################
 
 import random
 import numpy as np

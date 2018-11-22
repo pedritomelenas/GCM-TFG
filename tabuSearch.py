@@ -3,7 +3,7 @@ import random
 import matplotlib.pyplot as plt
 import numpy as np
 
-from redMethRotCurveFitting import phi
+from commonFunctions import phi
 
 ###############################################
 ############### Tabu Search ###################
