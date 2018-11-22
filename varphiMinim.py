@@ -3,15 +3,17 @@ import numpy as np
 from commonFunctions import phi
 random.seed(1)
 
+## VARPHI MINIMIZATION ##
+
 def getIMD(intizq, intder, galaxdata):
     m = (intder + intizq) / 2
-    M = phi(np.array([m]), galaxdata)
+    M, rhoM = phi(np.array([m]), galaxdata)
     i = random.uniform(intizq, m)
-    I = phi(np.array([i]), galaxdata)
+    I, rhoI = phi(np.array([i]), galaxdata)
     d = random.uniform(m, intder)
-    D = phi(np.array([d]), galaxdata)
+    D, rhoD = phi(np.array([d]), galaxdata)
 
-    return [[i, I], [m, M], [d, D]]
+    return [[i, I, rhoI], [m, M, rhoM], [d, D, rhoD]]
 
 def varphiMin(intervalinf, intervalsup, galaxdata):
     tol = 10**-8
@@ -30,13 +32,15 @@ def varphiMin(intervalinf, intervalsup, galaxdata):
             nfork = 0
         M = 1
         lastM = 0
-        izqphi = phi(np.array([intizq]), galaxdata)
-        derphi = phi(np.array([intder]), galaxdata)
+        izqphi, rhoi = phi(np.array([intizq]), galaxdata)
+        derphi, rhod = phi(np.array([intder]), galaxdata)
         if izqphi < derphi:
             minphi = izqphi
+            rho = rhoi
             minphiX = intizq
         else:
             minphi = derphi
+            rho = rhod
             minphiX = intder
         k = 0
         while abs(M - lastM) > tol:
@@ -72,14 +76,16 @@ def varphiMin(intervalinf, intervalsup, galaxdata):
             sorted_IMD = sorted(IMD, key=lambda tup: tup[1])
             if sorted_IMD[0][1] < minphi:
                 minphi = sorted_IMD[0][1]
+                rho = sorted_IMD[0][2]
                 minphiX = sorted_IMD[0][0]
             k += 1
         if minphi < bestphi:
             bestphi = minphi
+            bestrho = rho
             bestphiX = minphiX
         s += 1
         if galaxdata["graphic"]:
-            sol = [bestphi, bestphiX, X, Y, forkpoints]
+            sol = [bestphi, bestrho, bestphiX, X, Y, forkpoints]
         else:
-            sol = [bestphi, bestphiX, forkpoints]
+            sol = [bestphi, bestrho, bestphiX, forkpoints]
     return sol

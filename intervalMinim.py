@@ -128,7 +128,7 @@ def intervalMin(varphiLim0, varphiLimInf, galaxdata):
     direction = -1
     intervalinf = -3
     k = 0
-    lastint = phi(np.array([float(10 ** intervalinf)]), galaxdata)
+    lastint, rho = phi(np.array([float(10 ** intervalinf)]), galaxdata)
     dir = []
     stop = False
     i = 0.0
@@ -136,7 +136,7 @@ def intervalMin(varphiLim0, varphiLimInf, galaxdata):
     while maxiter < 100 and direction != 0 and k < 50:
         maxiter += 1
         s = 10**(intervalinf + np.array([-0.2, -0.1, 0.0, 0.1, 0.2]))
-        varphi = phi(s, galaxdata)
+        varphi, rho = phi(s, galaxdata)
         if min(varphi) < minphi:
             minphi = min(varphi)
             pos = (varphi.tolist()).index(minphi)
@@ -148,12 +148,12 @@ def intervalMin(varphiLim0, varphiLimInf, galaxdata):
 
         test1, test2 = inftestElementwise(eval)
         intervalinf, direction, stop, i = infConditions(test1, test2, intervalinf, stop, i)
-        var = phi(np.asarray([10 ** intervalinf]), galaxdata)
+        var, rho = phi(np.asarray([10 ** intervalinf]), galaxdata)
         twoclosevar = abs(var - lastint) < tol
         varLimdistance = abs(var - varphiLim0)
         jump, intervalinf, k = jumpCondition(twoclosevar, varLimdistance, intervalinf, direction, k)
         if jump:
-            lastint = phi(np.asarray([float(10 ** intervalinf)]), galaxdata)
+            lastint, rho = phi(np.asarray([float(10 ** intervalinf)]), galaxdata)
         else:
             lastint = var
 
@@ -163,7 +163,7 @@ def intervalMin(varphiLim0, varphiLimInf, galaxdata):
     direction = 1
     intervalsup = 3
     k = 0
-    lastint = phi(np.array([float(10**intervalsup)]), galaxdata)
+    lastint, rho = phi(np.array([float(10**intervalsup)]), galaxdata)
     dir.clear()
     stop = False
     i = 0.0
@@ -172,7 +172,7 @@ def intervalMin(varphiLim0, varphiLimInf, galaxdata):
         maxiter += 1
         # [-0.2, -0.15, -0.1, -0.05, 0.0, 0.05, 0.10, 0.15, 0.2]
         s = 10**(intervalsup + np.array([-0.2, -0.1, 0.0, 0.1, 0.2]))
-        varphi = phi(s, galaxdata)
+        varphi, rho = phi(s, galaxdata)
         if min(varphi) < minphi:
             minphi = min(varphi)
             pos = (varphi.tolist()).index(minphi)
@@ -184,12 +184,12 @@ def intervalMin(varphiLim0, varphiLimInf, galaxdata):
 
         test1, test2 = suptestElementwise(eval)
         intervalsup, direction, stop, i = supConditions(test1, test2, intervalsup, stop, i)
-        var = phi(np.asarray([10 ** intervalsup]), galaxdata)
+        var, rho = phi(np.asarray([10 ** intervalsup]), galaxdata)
         twoclosevar = abs(var - lastint) < tol
         varLimdistance = abs(var - varphiLimInf)
         jump, intervalsup, k = jumpCondition(twoclosevar, varLimdistance, intervalsup, direction, k)
         if jump:
-            lastint = phi(np.asarray([float(10 ** intervalsup)]), galaxdata)
+            lastint, rho = phi(np.asarray([float(10 ** intervalsup)]), galaxdata)
         else:
             lastint = var
 

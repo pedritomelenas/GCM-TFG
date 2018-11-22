@@ -6,6 +6,8 @@ from intervalMinim import intervalMin
 from varphiMinim import varphiMin
 import matplotlib.pyplot as plt
 import time
+from mpl_toolkits.mplot3d import Axes3D
+from matplotlib import cm
 
 galaxdata = {                          # Colocar en data.py?
     "radii": np.array([]),
@@ -21,7 +23,9 @@ galaxdata = {                          # Colocar en data.py?
     "profile": '',
     "graphic": False
 }
-profiles = ['ISO','BUR', 'NFW']       # Colocar en data.py?
+profiles = ['ISO'
+    #,'BUR', 'NFW'
+            ]       # Colocar en data.py?
 start_time = time.time()
 for i in dt.galaxlist:
     istart = time.time()
@@ -45,7 +49,7 @@ for i in dt.galaxlist:
     galaxdata["vv"] = vv
     vvbary = cf.vvbary(galaxdata)
     galaxdata["vvbary"] = vvbary
-    galaxdata["graphic"] = True
+    #galaxdata["graphic"] = True
 
     for p in profiles:
         print(" ********** PROFILE: ", p, " ************")
@@ -77,19 +81,36 @@ for i in dt.galaxlist:
             ### VARPHI MINIMIZATION ###
             pmin = varphiMin(intervalinf, intervalsup, galaxdata)
             minvarphi = pmin[0]
-            minvarphiX = pmin[1]
+            minrho = pmin[1]
+            minvarphiX = pmin[2]
             if galaxdata["graphic"]:
-                Xj = pmin[2]
-                Yj = pmin[3]
-                forkpoints = pmin[4]
+                Xj = pmin[3]
+                Yj = pmin[4]
+                forkpoints = pmin[5]
             else:
-                forkpoints = pmin[2]
+                forkpoints = pmin[3]
             print("minvarphi = ", minvarphi)
+            print("para s = ", minvarphiX)
+            print("con rho(s) = ", minrho)
+
+            # SEGUIR MIRANDO CÓMO DIBUJAR LA GRÁFICA
+            '''
+            fig = plt.figure()
+            ax = fig.gca(projection='3d')
+            Xsurf = np.logspace(-5, 3, 10)
+            #Ysurf, rhosurf = cf.phi(Xsurf, galaxdata)
+            rhosurf = np.linspace(10**(-1), 10**2, 10)
+            Xsurf, rhosurf = np.meshgrid(Xsurf, rhosurf)
+            chisurf = cf.chiquad(rhosurf, Xsurf, galaxdata)
+            surf = ax.plot_surface(Xsurf, rhosurf, chisurf, cmap=cm.coolwarm,
+                                   linewidth=0, antialiased=False)
+                                   '''
             if galaxdata["graphic"]:
                 plt.semilogx()
                 #X = np.logspace(-5, 3, 1000)               # Gráfica de ejemplo
                 plt.title("Galaxia "+i+" con perfil "+p)
-                #plt.plot(X, cf.phi(X, galaxdata), 'k')     # Gráfica de ejemplo
+                #phiX, rho = cf.phi(X, galaxdata)           # Gráfica de ejemplo
+                #plt.plot(X, phiX, 'k')                     # Gráfica de ejemplo
                 plt.xlabel("s (parámetro de escala)")      # Gráfica de ejemplo
                 plt.ylabel(r"$\varphi(s)$")                # Gráfica de ejemplo
                 plt.vlines(intervalinf, -0.1, 0.1)
