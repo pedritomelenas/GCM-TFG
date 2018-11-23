@@ -41,9 +41,9 @@ def v(x, s, model):
         v = np.sqrt(4 * np.pi * (np.log(1 + np.outer(x, s)) / np.outer(x, np.ones(len(s))) - (np.outer(np.ones(len(x)), s)
                                         / (1 + np.outer(x, s)))))
     return v
-'''
+
 def chiquad(rho, s, galaxdata):
-    vaux = v(galaxdata["radii"], s, galaxdata["profile"])       # NO FUNCIONA LA LLAMADA A v PORQUE A chiquad LE ENTRAN MATRICES
+    vaux = v(galaxdata["radii"], s, galaxdata["profile"])
     eval = rho * WeighProd(vaux, vaux, galaxdata["weights"]) / (galaxdata["CteDim"] * s ** 3)
     eval -= 2 * (WeighProd(np.dot(np.atleast_2d(galaxdata["vrot"]).T, np.atleast_2d(np.ones(len(s)))),
                            np.sqrt(np.square(vaux) * (np.ones((len(galaxdata["radii"]), 1)) *
@@ -53,7 +53,7 @@ def chiquad(rho, s, galaxdata):
                            galaxdata["weights"]))
     chi = vv(galaxdata) + vvbary(galaxdata) + eval
     return chi
-'''
+
 def rho(s, galaxdata):
     aux = 0 * s
     vHalos = v(galaxdata["radii"], s, galaxdata["profile"])     # Para s = 10^-12, vHalos = 0

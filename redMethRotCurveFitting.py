@@ -8,6 +8,8 @@ import matplotlib.pyplot as plt
 import time
 from mpl_toolkits.mplot3d import Axes3D
 from matplotlib import cm
+from galaxygraphic3D import generate3Dgraphic
+
 
 galaxdata = {                          # Colocar en data.py?
     "radii": np.array([]),
@@ -93,26 +95,14 @@ for i in dt.galaxlist:
             print("para s = ", minvarphiX)
             print("con rho(s) = ", minrho)
 
-            # SEGUIR MIRANDO CÓMO DIBUJAR LA GRÁFICA
-            '''
-            fig = plt.figure()
-            ax = fig.gca(projection='3d')
-            Xsurf = np.logspace(-5, 3, 10)
-            #Ysurf, rhosurf = cf.phi(Xsurf, galaxdata)
-            rhosurf = np.linspace(10**(-1), 10**2, 10)
-            Xsurf, rhosurf = np.meshgrid(Xsurf, rhosurf)
-            chisurf = cf.chiquad(rhosurf, Xsurf, galaxdata)
-            surf = ax.plot_surface(Xsurf, rhosurf, chisurf, cmap=cm.coolwarm,
-                                   linewidth=0, antialiased=False)
-                                   '''
             if galaxdata["graphic"]:
                 plt.semilogx()
                 #X = np.logspace(-5, 3, 1000)               # Gráfica de ejemplo
                 plt.title("Galaxia "+i+" con perfil "+p)
                 #phiX, rho = cf.phi(X, galaxdata)           # Gráfica de ejemplo
                 #plt.plot(X, phiX, 'k')                     # Gráfica de ejemplo
-                plt.xlabel("s (parámetro de escala)")      # Gráfica de ejemplo
-                plt.ylabel(r"$\varphi(s)$")                # Gráfica de ejemplo
+                #plt.xlabel("s (parámetro de escala)")      # Gráfica de ejemplo
+                #plt.ylabel(r"$\varphi(s)$")                # Gráfica de ejemplo
                 plt.vlines(intervalinf, -0.1, 0.1)
                 plt.vlines(intervalsup, -0.1, 0.1)
                 plt.hlines(-0.05, intervalinf, intervalsup)
@@ -125,6 +115,7 @@ for i in dt.galaxlist:
                 #plt.hlines(varphiLim0, intervalinf, 10)                # Límite en 0
                 plt.savefig("galaxies/graphics/" + p + '-' + i + '.png')
                 plt.gcf().clear()
+                #generate3Dgraphic(i, minvarphiX, minvarphi, minrho, galaxdata)     # Generador de gráficas 3D para ejemplos
         pend = time.time()
         print("Tiempo para el perfil ", p, " para la galaxia ", i, " = ", pend - pstart, " segundos")
     iend = time.time()
