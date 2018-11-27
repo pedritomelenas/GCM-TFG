@@ -141,11 +141,11 @@ def intervalMin(varphiLim0, varphiLimInf, galaxdata):
             minphi = min(varphi)
             pos = (varphi.tolist()).index(minphi)
             minx = s[pos]
-        eval = abs(varphi - varphiLim0) / varphiLim0
         if galaxdata["graphic"]:
             X.append(10**(intervalinf + np.array([-0.2, -0.1, 0.0, 0.1, 0.2])))
             Y.append(varphi)
 
+        eval = abs(varphi - varphiLim0) / varphiLim0
         test1, test2 = inftestElementwise(eval)
         intervalinf, direction, stop, i = infConditions(test1, test2, intervalinf, stop, i)
         var, rho = phi(np.asarray([10 ** intervalinf]), galaxdata)
@@ -177,11 +177,15 @@ def intervalMin(varphiLim0, varphiLimInf, galaxdata):
             minphi = min(varphi)
             pos = (varphi.tolist()).index(minphi)
             minx = s[pos]
-        eval = abs(varphi - varphiLimInf) / varphiLimInf
         if galaxdata["graphic"]:
             X.append(10**(intervalsup + np.array([-0.2, -0.1, 0.0, 0.1, 0.2])))
             Y.append(varphi)
 
+        #eval = abs(varphi - varphiLimInf) / varphiLimInf
+        if galaxdata["profile"] == 'ISO' or galaxdata["profile"] == 'BUR':
+            eval = abs(varphi - varphiLimInf) / (2*varphiLimInf)
+        else:
+            eval = abs(varphi - varphiLimInf) / varphiLimInf
         test1, test2 = suptestElementwise(eval)
         intervalsup, direction, stop, i = supConditions(test1, test2, intervalsup, stop, i)
         var, rho = phi(np.asarray([10 ** intervalsup]), galaxdata)

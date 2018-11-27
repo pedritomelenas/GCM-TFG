@@ -25,9 +25,7 @@ galaxdata = {                          # Colocar en data.py?
     "profile": '',
     "graphic": False
 }
-profiles = ['ISO'
-    #,'BUR', 'NFW'
-            ]       # Colocar en data.py?
+
 start_time = time.time()
 for i in dt.galaxlist:
     istart = time.time()
@@ -51,9 +49,9 @@ for i in dt.galaxlist:
     galaxdata["vv"] = vv
     vvbary = cf.vvbary(galaxdata)
     galaxdata["vvbary"] = vvbary
-    #galaxdata["graphic"] = True
+    galaxdata["graphic"] = True
 
-    for p in profiles:
+    for p in dt.profiles:
         print(" ********** PROFILE: ", p, " ************")
         galaxdata["profile"] = p
         pstart = time.time()
@@ -62,10 +60,11 @@ for i in dt.galaxlist:
             limits = calLimits(galaxdata)
             varphiLim0 = limits[0]
             varphiLimInf = limits[1]
-            print("varphiLimInf", varphiLimInf)
-            print("varphiLim0", varphiLim0)
+            #print("varphiLimInf", varphiLimInf)
+            #print("varphiLim0", varphiLim0)
 
             ### INTERVAL MINIMIZATION ###
+            intervalmin_start = time.time()
             interval = intervalMin(varphiLim0, varphiLimInf, galaxdata)
             intervalinf = interval[0][0]
             intervalsup = interval[0][1]
@@ -79,7 +78,8 @@ for i in dt.galaxlist:
                 intminvarphi = interval[1]
                 intminvarphiX = interval[2]
             X = np.logspace(np.log10(intervalinf), np.log10(intervalsup), 8)
-
+            intervalmin_end = time.time()
+            print("Tiempo de minimización del intervalo = ", intervalmin_end - intervalmin_start, " segundos")
             ### VARPHI MINIMIZATION ###
             pmin = varphiMin(intervalinf, intervalsup, galaxdata)
             minvarphi = pmin[0]
@@ -103,17 +103,20 @@ for i in dt.galaxlist:
                 #plt.plot(X, phiX, 'k')                     # Gráfica de ejemplo
                 #plt.xlabel("s (parámetro de escala)")      # Gráfica de ejemplo
                 #plt.ylabel(r"$\varphi(s)$")                # Gráfica de ejemplo
-                plt.vlines(intervalinf, -0.1, 0.1)
-                plt.vlines(intervalsup, -0.1, 0.1)
+                plt.scatter(intervalinf, 0, c='black', marker=3)
+                plt.scatter(intervalsup, 0, c='black', marker=3)
+                #plt.vlines(intervalinf, -0.1, 0.1)
+                #plt.vlines(intervalsup, -0.1, 0.1)
                 plt.hlines(-0.05, intervalinf, intervalsup)
-                plt.scatter(X, np.zeros(len(X)), color='black', marker=3)
+                #plt.scatter(X, np.zeros(len(X)), color='black', marker=3)
                 #plt.scatter(forkpoints, np.zeros(len(forkpoints)), c='r', marker=3)
                 plt.scatter(Xi, Yi, c='r', marker='.')                      # Exploración de la minimización del intervalo
                 plt.scatter(Xj, Yj, c='b', marker='.', linewidths=0.01)     # Exploración de la minimización de varphi
                 plt.scatter(minvarphiX, minvarphi, c='c', marker='*', linewidths=2)     # Mínimo de varphi
                 #plt.hlines(varphiLimInf, 10 ** -2, intervalsup)        # Límite en infinito
                 #plt.hlines(varphiLim0, intervalinf, 10)                # Límite en 0
-                plt.savefig("galaxies/graphics/" + p + '-' + i + '.png')
+                #plt.show()
+                plt.savefig("galaxies/graphics/" + p + '-' + i + '-interval-improvement.png')
                 plt.gcf().clear()
                 #generate3Dgraphic(i, minvarphiX, minvarphi, minrho, galaxdata)     # Generador de gráficas 3D para ejemplos
         pend = time.time()

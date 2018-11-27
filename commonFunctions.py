@@ -31,15 +31,15 @@ def eqVLim0(t, g0, galaxdata):
     return WeighProd(g0, galaxdata["vones"], galaxdata["weights"]) - \
            WeighProd(galaxdata["vrot"], g0 / np.sqrt(t * g0 + galaxdata["vbary"] ** 2), galaxdata["weights"])
 
-def v(x, s, model):
+def v(r, s, model):     # Cálculo de W^s(r)
     if model == 'ISO':
-        v = np.sqrt(4 * np.pi * (np.outer(x, s) - np.arctan(np.outer(x, s))) / np.outer(x, np.ones(len(s))))
+        v = np.sqrt(4 * np.pi * (np.outer(r, s) - np.arctan(np.outer(r, s))) / np.outer(r, np.ones(len(s))))
     elif model == 'BUR':
-        v = np.sqrt(np.pi * (np.log((1+(np.outer(x, s))**2) * ((1 + np.outer(x, s))**2)) - 2*np.arctan(np.outer(x, s)))
-                    / np.outer(x, np.ones(len(s))))
+        v = np.sqrt(np.pi * (np.log((1+(np.outer(r, s))**2) * ((1 + np.outer(r, s))**2)) - 2*np.arctan(np.outer(r, s)))
+                    / np.outer(r, np.ones(len(s))))
     elif model == 'NFW':
-        v = np.sqrt(4 * np.pi * (np.log(1 + np.outer(x, s)) / np.outer(x, np.ones(len(s))) - (np.outer(np.ones(len(x)), s)
-                                        / (1 + np.outer(x, s)))))
+        v = np.sqrt(4 * np.pi * (np.log(1 + np.outer(r, s)) / np.outer(r, np.ones(len(s))) - (np.outer(np.ones(len(r)), s)
+                                        / (1 + np.outer(r, s)))))
     return v
 
 def chiquad(rho, s, galaxdata):
@@ -54,7 +54,7 @@ def chiquad(rho, s, galaxdata):
     chi = vv(galaxdata) + vvbary(galaxdata) + eval
     return chi
 
-def rho(s, galaxdata):
+def rho(s, galaxdata):      # Cálculo de rho_0 de la Proposición
     aux = 0 * s
     vHalos = v(galaxdata["radii"], s, galaxdata["profile"])     # Para s = 10^-12, vHalos = 0
     rhs = WeighProd(vHalos, vHalos, galaxdata["weights"])  # rhs Eq  # 19 and #20 up to multiplicative constant 1/(s^3 CteDim)
@@ -87,7 +87,7 @@ def rho(s, galaxdata):
             aux[i] = op.brentq(rhoequation, 0, rhoVbaryNull[i])
     return aux
 
-def alphaMV(s, galaxdata):
+def alphaMV(s, galaxdata):      # Cálculo de g(rho_0,s) de la Ecuación \eqref(eq:alpha)
     rhoaux = rho(s, galaxdata)
     vaux = v(galaxdata["radii"], s, galaxdata["profile"])
     eval = rhoaux * WeighProd(vaux, vaux, galaxdata["weights"]) / (galaxdata["CteDim"] * s ** 3)
