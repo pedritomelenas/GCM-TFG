@@ -4,6 +4,7 @@ from math import trunc
 from commonFunctions import phi
 
 tol = 10 ** -2
+random.seed(1)
 
 def inftestElementwise(eval):
     test1 = True
@@ -121,7 +122,6 @@ def intervalMin(varphiLim0, varphiLimInf, galaxdata):
         Y = []
     minphi = 10**4  # para devolver el mínimo encontrado en la exploración
     minx = 0        # para devolver el mínimo encontrado en la exploración
-    random.seed(1)
 
     # INTERVALO INFERIOR #
     maxiter = 0
@@ -182,7 +182,7 @@ def intervalMin(varphiLim0, varphiLimInf, galaxdata):
             Y.append(varphi)
 
         #eval = abs(varphi - varphiLimInf) / varphiLimInf
-        if galaxdata["profile"] == 'ISO' or galaxdata["profile"] == 'BUR':
+        if galaxdata["profile"] == 'BUR' or galaxdata["profile"] == 'NFW':
             eval = abs(varphi - varphiLimInf) / (2*varphiLimInf)
         else:
             eval = abs(varphi - varphiLimInf) / varphiLimInf
