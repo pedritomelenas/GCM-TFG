@@ -105,7 +105,7 @@ def jumpCondition(twoclosevar, varLimdistance, interval, direction, k):
             jump = True
             interval = interval + random.uniform(0.7, 0.8) * direction
             k = 0
-        if k >= 25 and varLimdistance >= 1:
+        if k >= 7 and varLimdistance >= 1+tol:
             k = 0
     else:
         k = 0
@@ -133,7 +133,7 @@ def intervalMin(varphiLim0, varphiLimInf, galaxdata):
     stop = False
     i = 0.0
 
-    while maxiter < 100 and direction != 0 and k < 50:
+    while maxiter < 100 and direction != 0 and k < 10:
         maxiter += 1
         s = 10**(intervalinf + np.array([-0.2, -0.1, 0.0, 0.1, 0.2]))
         varphi, rho = phi(s, galaxdata)

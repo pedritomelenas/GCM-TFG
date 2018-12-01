@@ -97,22 +97,26 @@ for i in dt.galaxlist:
 
             if galaxdata["graphic"]:
                 plt.semilogx()
-                #X = np.logspace(-5, 3, 1000)               # Gráfica de ejemplo
+                #X = np.logspace(-6, 20, 5000)               # Gráfica de ejemplo
                 plt.title("Galaxia "+i+" con perfil "+p)
                 #phiX, rho = cf.phi(X, galaxdata)           # Gráfica de ejemplo
                 #plt.plot(X, phiX, 'k')                     # Gráfica de ejemplo
-                #plt.xlabel("s (parámetro de escala)")      # Gráfica de ejemplo
-                #plt.ylabel(r"$\varphi(s)$")                # Gráfica de ejemplo
+                plt.xlabel("s (parámetro de escala)")      # Gráfica de ejemplo
+                plt.ylabel(r"$\varphi(s)$")                # Gráfica de ejemplo
+                #plt.vlines(intervalsup, minvarphi, varphiLimInf,
+                #           colors='b', linestyles='dashed')            # Ejemplo: diferencia entre condiciones de convergencia
+                #plt.gca().set_xticks([intervalsup])                    # Ejemplo: diferencia entre condiciones de convergencia
+                #plt.gca().set_xticklabels([""+str(intervalsup)+""])    # Ejemplo: diferencia entre condiciones de convergencia
                 plt.scatter(intervalinf, 0, c='black', marker=3)
                 plt.scatter(intervalsup, 0, c='black', marker=3)
                 #plt.vlines(intervalinf, -0.1, 0.1)
                 #plt.vlines(intervalsup, -0.1, 0.1)
-                plt.hlines(-0.05, intervalinf, intervalsup)
-                #plt.scatter(X, np.zeros(len(X)), color='black', marker=3)
+                plt.hlines(0, intervalinf, intervalsup)
+                plt.scatter(X, np.zeros(len(X)), color='black', marker=3)
                 #plt.scatter(forkpoints, np.zeros(len(forkpoints)), c='r', marker=3)
                 plt.scatter(Xi, Yi, c='r', marker='.')                      # Exploración de la minimización del intervalo
                 plt.scatter(Xj, Yj, c='b', marker='.', linewidths=0.01)     # Exploración de la minimización de varphi
-                plt.scatter(minvarphiX, minvarphi, c='c', marker='*', linewidths=2)     # Mínimo de varphi
+                #plt.scatter(minvarphiX, minvarphi, c='c', marker='*', linewidths=2)     # Mínimo de varphi
                 #plt.hlines(varphiLimInf, 10 ** -2, intervalsup)        # Límite en infinito
                 #plt.hlines(varphiLim0, intervalinf, 10)                # Límite en 0
                 #plt.show()
