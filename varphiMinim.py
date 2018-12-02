@@ -34,7 +34,8 @@ def reductionInterval(varphiLim0, varphiLimInf, intinfmin, intsupmin, intervalin
 
 def varphiMin(varphiLim0, varphiLimInf, intinfmin, intsupmin, intervalinf, intervalsup, galaxdata):
     tol = 10**-8
-    intervalinf, intervalsup = reductionInterval(varphiLim0, varphiLimInf, intinfmin, intsupmin, intervalinf, intervalsup)
+    intervalinf, intervalsup = reductionInterval(varphiLim0, varphiLimInf,
+                                                 intinfmin, intsupmin, intervalinf, intervalsup)    # Mejora
     subint = np.asarray(np.logspace(np.log10(intervalinf), np.log10(intervalsup), 8))
     Xs = subint
     bestphi = 10**4
@@ -104,7 +105,7 @@ def varphiMin(varphiLim0, varphiLimInf, intinfmin, intsupmin, intervalinf, inter
             bestphiX = minphiX
         s += 1
         if galaxdata["graphic"]:
-            sol = [bestphi, bestrho, bestphiX, X, Y, forkpoints, Xs]
+            sol = [bestphi, bestrho, bestphiX, X, Y, forkpoints, Xs, intervalinf, intervalsup]
         else:
-            sol = [bestphi, bestrho, bestphiX, forkpoints, Xs]
+            sol = [bestphi, bestrho, bestphiX, forkpoints, Xs, intervalinf, intervalsup]
     return sol
