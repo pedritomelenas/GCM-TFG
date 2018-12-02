@@ -72,16 +72,15 @@ for i in dt.galaxlist:
             if galaxdata["graphic"]:
                 Xi = interval[1]
                 Yi = interval[2]
-                intminvarphi = interval[3]
-                intminvarphiX = interval[4]
+                intinfmin = interval[3]
+                intsupmin = interval[4]
             else:
-                intminvarphi = interval[1]
-                intminvarphiX = interval[2]
-            X = np.logspace(np.log10(intervalinf), np.log10(intervalsup), 8)
+                intinfmin = interval[1]
+                intsupmin = interval[2]
             intervalmin_end = time.time()
             print("Tiempo de minimización del intervalo = ", intervalmin_end - intervalmin_start, " segundos")
             ### VARPHI MINIMIZATION ###
-            pmin = varphiMin(intervalinf, intervalsup, galaxdata)
+            pmin = varphiMin(varphiLim0, varphiLimInf, intinfmin, intsupmin, intervalinf, intervalsup, galaxdata)
             minvarphi = pmin[0]
             minrho = pmin[1]
             minvarphiX = pmin[2]
@@ -89,8 +88,10 @@ for i in dt.galaxlist:
                 Xj = pmin[3]
                 Yj = pmin[4]
                 forkpoints = pmin[5]
+                X = pmin[6]
             else:
                 forkpoints = pmin[3]
+                X = pmin[4]
             print("minvarphi = ", minvarphi)
             print("para s = ", minvarphiX)
             print("con rho(s) = ", minrho)
@@ -119,9 +120,9 @@ for i in dt.galaxlist:
                 #plt.scatter(minvarphiX, minvarphi, c='c', marker='*', linewidths=2)     # Mínimo de varphi
                 #plt.hlines(varphiLimInf, 10 ** -2, intervalsup)        # Límite en infinito
                 #plt.hlines(varphiLim0, intervalinf, 10)                # Límite en 0
-                #plt.show()
-                plt.savefig("galaxies/graphics/" + p + '-' + i + '-interval-improvement.png')
-                plt.gcf().clear()
+                plt.show()
+                #plt.savefig("galaxies/graphics/" + p + '-' + i + '-interval-improvement.png')
+                #plt.gcf().clear()
                 #generate3Dgraphic(i, minvarphiX, minvarphi, minrho, galaxdata)     # Generador de gráficas 3D para ejemplos
         pend = time.time()
         print("Tiempo para el perfil ", p, " para la galaxia ", i, " = ", pend - pstart, " segundos")

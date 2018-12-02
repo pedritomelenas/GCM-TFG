@@ -15,9 +15,28 @@ def getIMD(intizq, intder, galaxdata):
 
     return [[i, I, rhoI], [m, M, rhoM], [d, D, rhoD]]
 
-def varphiMin(intervalinf, intervalsup, galaxdata):
+def reductionInterval(varphiLim0, varphiLimInf, intinfmin, intsupmin, intervalinf, intervalsup):
+    intinf = intervalinf
+    if varphiLim0 > varphiLimInf:
+        if abs(varphiLim0 - intinfmin[1]) < abs(varphiLimInf - intinfmin[1]):
+            intinf = intinfmin[0]
+    else:
+        if abs(varphiLim0 - intinfmin[1]) < 1.0:
+            intinf = intinfmin[0]
+    intsup = intervalsup
+    if varphiLimInf > varphiLim0:
+        if abs(varphiLimInf - intsupmin[1]) < abs(varphiLim0 - intsupmin[1]):
+            intsup = intsupmin[0]
+    else:
+        if abs(varphiLimInf - intsupmin[1]) < 1.0:
+            intsup = intsupmin[0]
+    return intinf, intsup
+
+def varphiMin(varphiLim0, varphiLimInf, intinfmin, intsupmin, intervalinf, intervalsup, galaxdata):
     tol = 10**-8
+    intervalinf, intervalsup = reductionInterval(varphiLim0, varphiLimInf, intinfmin, intsupmin, intervalinf, intervalsup)
     subint = np.asarray(np.logspace(np.log10(intervalinf), np.log10(intervalsup), 8))
+    Xs = subint
     bestphi = 10**4
     if galaxdata["graphic"]:
         X = []
@@ -85,7 +104,7 @@ def varphiMin(intervalinf, intervalsup, galaxdata):
             bestphiX = minphiX
         s += 1
         if galaxdata["graphic"]:
-            sol = [bestphi, bestrho, bestphiX, X, Y, forkpoints]
+            sol = [bestphi, bestrho, bestphiX, X, Y, forkpoints, Xs]
         else:
-            sol = [bestphi, bestrho, bestphiX, forkpoints]
+            sol = [bestphi, bestrho, bestphiX, forkpoints, Xs]
     return sol

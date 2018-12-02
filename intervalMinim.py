@@ -120,9 +120,8 @@ def intervalMin(varphiLim0, varphiLimInf, galaxdata):
     if galaxdata["graphic"]:
         X = []
         Y = []
-    minphi = 10**4  # para devolver el mínimo encontrado en la exploración
-    minx = 0        # para devolver el mínimo encontrado en la exploración
-
+    infminphi = 10**4  # para devolver el mínimo encontrado en la exploración
+    infminx = 0        # para devolver el mínimo encontrado en la exploración
     # INTERVALO INFERIOR #
     maxiter = 0
     direction = -1
@@ -137,10 +136,10 @@ def intervalMin(varphiLim0, varphiLimInf, galaxdata):
         maxiter += 1
         s = 10**(intervalinf + np.array([-0.2, -0.1, 0.0, 0.1, 0.2]))
         varphi, rho = phi(s, galaxdata)
-        if min(varphi) < minphi:
-            minphi = min(varphi)
-            pos = (varphi.tolist()).index(minphi)
-            minx = s[pos]
+        if min(varphi) < infminphi:
+            infminphi = min(varphi)
+            pos = (varphi.tolist()).index(infminphi)
+            infminx = s[pos]
         if galaxdata["graphic"]:
             X.append(10**(intervalinf + np.array([-0.2, -0.1, 0.0, 0.1, 0.2])))
             Y.append(varphi)
@@ -167,16 +166,18 @@ def intervalMin(varphiLim0, varphiLimInf, galaxdata):
     dir.clear()
     stop = False
     i = 0.0
+    supminphi = 10**4
+    supminx = 0
 
     while maxiter < 100 and direction != 0 and k < 50:  # Nueva condición de parada --> relacionar con el límite
         maxiter += 1
         # [-0.2, -0.15, -0.1, -0.05, 0.0, 0.05, 0.10, 0.15, 0.2]
         s = 10**(intervalsup + np.array([-0.2, -0.1, 0.0, 0.1, 0.2]))
         varphi, rho = phi(s, galaxdata)
-        if min(varphi) < minphi:
-            minphi = min(varphi)
-            pos = (varphi.tolist()).index(minphi)
-            minx = s[pos]
+        if min(varphi) < supminphi:
+            supminphi = min(varphi)
+            pos = (varphi.tolist()).index(supminphi)
+            supminx = s[pos]
         if galaxdata["graphic"]:
             X.append(10**(intervalsup + np.array([-0.2, -0.1, 0.0, 0.1, 0.2])))
             Y.append(varphi)
@@ -203,9 +204,11 @@ def intervalMin(varphiLim0, varphiLimInf, galaxdata):
         intervalsup = 5
 
     interval = [10**intervalinf, 10**intervalsup]
+    infmin = [infminx, infminphi]
+    supmin = [supminx, supminphi]
     if galaxdata["graphic"]:
-        sol = [interval, X, Y, minphi, minx]
+        sol = [interval, X, Y, infmin, supmin]
     else:
-        sol = [interval, minphi, minx]
+        sol = [interval, infmin, supmin]
 
     return sol
