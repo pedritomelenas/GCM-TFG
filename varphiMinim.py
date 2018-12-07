@@ -21,14 +21,14 @@ def reductionInterval(varphiLim0, varphiLimInf, intinfmin, intsupmin, intervalin
         if abs(varphiLim0 - intinfmin[1]) < abs(varphiLimInf - intinfmin[1]):
             intinf = intinfmin[0]
     else:
-        if abs(varphiLim0 - intinfmin[1]) < 1.0:
+        if abs(varphiLim0 - intinfmin[1]) < 0.1:
             intinf = intinfmin[0]
     intsup = intervalsup
     if varphiLimInf > varphiLim0:
         if abs(varphiLimInf - intsupmin[1]) < abs(varphiLim0 - intsupmin[1]):
             intsup = intsupmin[0]
     else:
-        if abs(varphiLimInf - intsupmin[1]) < 1.0:
+        if abs(varphiLimInf - intsupmin[1]) < 0.1:
             intsup = intsupmin[0]
     return intinf, intsup
 
