@@ -6,6 +6,13 @@ from commonFunctions import phi
 tol = 10 ** -2
 random.seed(1)
 
+##  Comprueba si cada uno de los valores del vector pasado por parámetro cumple el
+##  criterio analítico de convergencia para el límite en cero, indicado en (40).
+#   param:
+#       eval: vector de puntos vecinos al candidato a extremo inferior del intervalo.
+#   return:
+#       test1: booleano, indica si los puntos de la derecha cumplen (40)
+#       test2: booleano, indica si los puntos de la izquierda cumplen (40)
 def inftestElementwise(eval):
     test1 = True
     test2 = True
@@ -18,6 +25,13 @@ def inftestElementwise(eval):
             test2 = False
     return test1, test2
 
+##  Comprueba si cada uno de los valores del vector pasado por parámetro cumple el
+##  criterio analítico de convergencia para el límite en infinito, indicado en (39).
+#   param:
+#       eval: vector de puntos vecinos al candidato a extremo superior del intervalo.
+#   return:
+#       test1: booleano, indica si los puntos de la izquierda cumplen (39)
+#       test2: booleano, indica si los puntos de la derecha cumplen (39)
 def suptestElementwise(eval):
     test1 = True
     test2 = True
@@ -30,31 +44,57 @@ def suptestElementwise(eval):
             test1 = False
     return test1, test2
 
+##  Comprueba si la suma de los valores del vector pasado por parámetro cumple el
+##  criterio analítico de convergencia para el límite en cero, indicado en (40).
+#   param:
+#       eval: vector de puntos vecinos al candidato a extremo inferior del intervalo.
+#   return:
+#       test1: booleano, indica si la suma de los puntos de la derecha cumplen (40)
+#       test2: booleano, indica si la suma de los puntos de la izquierda cumplen (40)
 def inftestElementsum(eval):
     l = len(eval)
     test1 = sum(eval[trunc(l/2):l]) < tol
     test2 = sum(eval[0:trunc(l/2)]) < tol
     return test1, test2
 
+##  Comprueba si la suma de los valores del vector pasado por parámetro cumple el
+##  criterio analítico de convergencia para el límite en infinito, indicado en (39).
+#   param:
+#       eval: vector de puntos vecinos al candidato a extremo superior del intervalo.
+#   return:
+#       test1: booleano, indica si la suma de los puntos de la izquierda cumplen (39)
+#       test2: booleano, indica si la suma de los puntos de la derecha cumplen (39)
 def suptestElementsum(eval):
     l = len(eval)
     test1 = sum(eval[0:round(l/2)]) < tol
     test2 = sum(eval[round(l/2):l]) < tol
     return test1, test2
 
+##  Comprueba la situación del punto candidato a extremo inferior del intervalo y la
+##  de sus puntos vecinos. Decide si está en condición óptima y hacia qué dirección
+##  moverse.
+#   param:
+#       test1: booleano, indica si los puntos de la derecha (o su suma) cumplen (40)
+#       test2: booleano, indica si los puntos de la izquierda (o su suma) cumplen (40)
+#       intervalinf: candidato a extremo inferior del intervalo
+#       stop: controla la condición de parada
+#       i: almacena el anterior candidato a extremo inferior
+#   return:
+#       intervalinf: candidato a extremo inferior del intervalo
+#       direction: dirección de movimiento (-1, 0 o 1)
+#       stop: controla la condición de parada
+#       i: devuelve el anterior candidato a extremo inferior
 def infConditions(test1, test2, intervalinf, stop, i):
     if (not test1) and test2:
-        stop = True  # Podemos convertir stop en un contador, en lugar de un booleano, para
-        direction = -1  # establecer un patrón más específico
+        stop = True
+        direction = -1
         i = intervalinf
-        intervalinf = intervalinf + random.uniform(0.2, 0.6) * direction  # En cada iteración, intervalinf
-        # direction = 0                                                          # varía con una dirección determinada
-    elif (not test1) and (not test2):  # pero con módulo aleatorio
+        intervalinf = intervalinf + random.uniform(0.2, 0.6) * direction
+    elif (not test1) and (not test2):
         if stop:
             stop = False
         direction = -1
         intervalinf = intervalinf + random.uniform(0.2, 0.3) * direction
-        # intervalinf = intervalinf + 0.3 * direction
     elif test1 and test2:
         if stop:
             direction = 0
@@ -70,13 +110,26 @@ def infConditions(test1, test2, intervalinf, stop, i):
 
     return intervalinf, direction, stop, i
 
-def supConditions(test1, test2, intervalsup, stop,i):
+##  Comprueba la situación del punto candidato a extremo superior del intervalo y la
+##  de sus puntos vecinos. Decide si está en condición óptima y hacia qué dirección
+##  moverse.
+#   param:
+#       test1: booleano, indica si los puntos de la izquierda (o su suma) cumplen (39)
+#       test2: booleano, indica si los puntos de la derecha (o su suma) cumplen (39)
+#       intervalsup: candidato a extremo superior del intervalo
+#       stop: controla la condición de parada
+#       i: almacena el anterior candidato a extremo superior
+#   return:
+#       intervalinf: candidato a extremo superior del intervalo
+#       direction: dirección de movimiento (-1, 0 o 1)
+#       stop: controla la condición de parada
+#       i: devuelve el anterior candidato a extremo superior
+def supConditions(test1, test2, intervalsup, stop, i):
     if (not test1) and test2:
-        stop = True  # Podemos convertir stop en un contador, en lugar de un booleano, pera
-        direction = 1  # establecer un patrón más específico --> agrandar el boleano: 0.3 - 0.6
+        stop = True
+        direction = 1
         i = intervalsup
-        intervalsup = intervalsup + random.uniform(0.2, 0.6) * direction  # En cada iteración, intervalsup
-        #  varía con una dirección determinada
+        intervalsup = intervalsup + random.uniform(0.2, 0.6) * direction
     elif (not test1) and (not test2):
         if stop:
             stop = False
@@ -97,6 +150,17 @@ def supConditions(test1, test2, intervalsup, stop,i):
 
     return intervalsup, direction, stop, i
 
+##  Comprueba si se da la condición de salto.
+#   param:
+#       twoclosevar: booleano, indica si los dos últimos candidatos están "cerca"
+#       varLimdistance: indica a qué distancia está el valor del límite
+#       interval: candidato a intervalo inferior o superior
+#       direction: dirección de movimiento (-1, 0 o 1)
+#       k: contador de la condición de salto
+#   return:
+#       jump: booleano, indica si ha habido salto
+#       interval: candidato a intervalo inferior o superior
+#       k: contador de la condición de salto
 def jumpCondition(twoclosevar, varLimdistance, interval, direction, k):
     jump = False
     if twoclosevar:
@@ -111,17 +175,23 @@ def jumpCondition(twoclosevar, varLimdistance, interval, direction, k):
         k = 0
     return jump, interval, k
 
-## IDEA:
-## 1) APROVECHAR ESTE ALGORITMO PARA DETECTAR, SI ES QUE SE DA, LA EXISTENCIA DEL MÍNIMO ##
-## Si varphiLim0 < varphiLimInf, basta con que exista un s tal que varphi(s) < varphiLim0 para asegurar la existencia del límite
-## Si varphiLimInf < varphiLim0, basta con que exista un s tal que varphi(s) < varphiLimInf para asegurar la existencia del límite
-## 2) APROVECHAR ESTE ALGORITMO PARA ALMACENAR EL MÍNIMO EVALUADO HASTA EL MOMENTO <-- Hecho (quizás no haya merecido la pena => Revisar)
+##  Realiza la minimización del intervalo de búsqueda: primero busca el extremo inferior
+##  que cumple alguna condición satisfactoria y luego el extremo superior, análogamente.
+#   param:
+#       varphiLim: Límite de varphi en 0
+#       varphiLimInf: Límite de varphi en infinito
+#       galaxdata: diccionario de datos de la galaxia
+#   return:
+#       sol: vector con el intervalo deducido, el mínimo valor encontrado en la exploración
+#       de la parte izquierda y el mínimo valor encontrado en la exploración de la parte
+#       derecha (puede también datos para la elaboración de gráficas).
 def intervalMin(varphiLim0, varphiLimInf, galaxdata):
     if galaxdata["graphic"]:
         X = []
         Y = []
     infminphi = 10**4  # para devolver el mínimo encontrado en la exploración
     infminx = 0        # para devolver el mínimo encontrado en la exploración
+
     # INTERVALO INFERIOR #
     maxiter = 0
     direction = -1
@@ -166,12 +236,11 @@ def intervalMin(varphiLim0, varphiLimInf, galaxdata):
     dir.clear()
     stop = False
     i = 0.0
-    supminphi = 10**4
-    supminx = 0
+    supminphi = 10**4   # para devolver el mínimo encontrado en la exploración
+    supminx = 0         # para devolver el mínimo encontrado en la exploración
 
-    while maxiter < 100 and direction != 0 and k < 50:  # Nueva condición de parada --> relacionar con el límite
+    while maxiter < 100 and direction != 0 and k < 50:
         maxiter += 1
-        # [-0.2, -0.15, -0.1, -0.05, 0.0, 0.05, 0.10, 0.15, 0.2]
         s = 10**(intervalsup + np.array([-0.2, -0.1, 0.0, 0.1, 0.2]))
         varphi, rho = phi(s, galaxdata)
         if min(varphi) < supminphi:
@@ -183,10 +252,11 @@ def intervalMin(varphiLim0, varphiLimInf, galaxdata):
             Y.append(varphi)
 
         #eval = abs(varphi - varphiLimInf) / varphiLimInf
-        if galaxdata["profile"] == 'BUR' or galaxdata["profile"] == 'NFW':
-            eval = abs(varphi - varphiLimInf) / (2*varphiLimInf)
-        else:
-            eval = abs(varphi - varphiLimInf) / varphiLimInf
+        if galaxdata["profile"] == 'BUR' or galaxdata["profile"] == 'NFW':      # Mejora propuesta
+            eval = abs(varphi - varphiLimInf) / (2*varphiLimInf)                # Mejora propuesta
+        else:                                                                   # Mejora propuesta
+            eval = abs(varphi - varphiLimInf) / varphiLimInf                    # Mejora propuesta
+
         test1, test2 = suptestElementwise(eval)
         intervalsup, direction, stop, i = supConditions(test1, test2, intervalsup, stop, i)
         var, rho = phi(np.asarray([10 ** intervalsup]), galaxdata)
