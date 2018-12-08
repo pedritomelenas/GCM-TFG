@@ -182,9 +182,11 @@ def jumpCondition(twoclosevar, varLimdistance, interval, direction, k):
 #       varphiLimInf: Límite de varphi en infinito
 #       galaxdata: diccionario de datos de la galaxia
 #   return:
-#       sol: vector con el intervalo deducido, el mínimo valor encontrado en la exploración
-#       de la parte izquierda y el mínimo valor encontrado en la exploración de la parte
-#       derecha (puede también datos para la elaboración de gráficas).
+#       vector solución
+#           interval: intervalo deducido
+#           infmin: mínimo valor encontrado en la exploración de la parte izquierda
+#           supmin: mínimo valor encontrado en la exploración de la parte derecha
+#           X, Y: datos para la elaboración de gráficas (opcional)
 def intervalMin(varphiLim0, varphiLimInf, galaxdata):
     if galaxdata["graphic"]:
         X = []
@@ -252,10 +254,10 @@ def intervalMin(varphiLim0, varphiLimInf, galaxdata):
             Y.append(varphi)
 
         #eval = abs(varphi - varphiLimInf) / varphiLimInf
-        if galaxdata["profile"] == 'BUR' or galaxdata["profile"] == 'NFW':      # Mejora propuesta
-            eval = abs(varphi - varphiLimInf) / (2*varphiLimInf)                # Mejora propuesta
-        else:                                                                   # Mejora propuesta
-            eval = abs(varphi - varphiLimInf) / varphiLimInf                    # Mejora propuesta
+        if galaxdata["profile"] == 'BUR' or galaxdata["profile"] == 'NFW':      # Mejora propuesta en la memoria
+            eval = abs(varphi - varphiLimInf) / (2*varphiLimInf)                # Mejora propuesta en la memoria
+        else:                                                                   # Mejora propuesta en la memoria
+            eval = abs(varphi - varphiLimInf) / varphiLimInf                    # Mejora propuesta en la memoria
 
         test1, test2 = suptestElementwise(eval)
         intervalsup, direction, stop, i = supConditions(test1, test2, intervalsup, stop, i)
