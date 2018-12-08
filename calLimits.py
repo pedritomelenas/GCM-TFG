@@ -4,6 +4,12 @@ import scipy.optimize as op
 
 ## CALCULATION OF VARPHI LIMITS ##
 
+
+##  Cálculo de los límites de varphi en 0 y en infinito, usando el Lema 1.
+#   param:
+#       galaxdata: datos de la galaxia
+#   return:
+#       limits: array con dos valores, el límite en 0 y el límite en infinito
 def calLimits(galaxdata):
     ginf = cf.ginf(galaxdata["radii"], galaxdata["profile"])
     g0 = cf.g0(galaxdata["radii"], galaxdata["profile"])
