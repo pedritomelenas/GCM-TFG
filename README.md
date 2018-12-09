@@ -3,6 +3,8 @@
 Este repositorio contiene el código implementado para el TFM de Marina Estévez Almenzar, dirigido por
 [Óscar Sánchez Romero](https://www.ugr.es/~ossanche) y [Pedro A. García Sánchez](https://wwww.ugr.es/~pedro).
 
+[![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/pedritomelenas/GCM-TFG/master)
+
 ## Resumen
 
 En este trabajo se presenta y desarrolla un problema de optimización presente actualmente en el campo de la Astrofísica. 
