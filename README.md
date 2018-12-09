@@ -1,7 +1,7 @@
 # GCM-TFG Galaxy components modeling
 
 Este repositorio contiene el código implementado para el TFM de Marina Estévez Almenzar, dirigido por
-[Óscar Sánchez Romero](@oscarsanchezromero) y [Pedro A. García Sánchez](@pedritomelenas).
+Óscar Sánchez Romero (@oscarsanchezromero) y Pedro A. García Sánchez (@pedritomelenas).
 
 ## Resumen
 
