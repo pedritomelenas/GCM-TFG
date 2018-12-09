@@ -234,7 +234,6 @@ def intervalMin(varphiLim0, varphiLimInf, galaxdata):
     intervalsup = 3
     k = 0
     lastint, rho = phi(np.array([float(10**intervalsup)]), galaxdata)
-    dir.clear()
     stop = False
     i = 0.0
     supminphi = 10**4   # para devolver el mínimo encontrado en la exploración
