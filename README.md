@@ -3,6 +3,7 @@
 Este repositorio contiene el código implementado para el TFG de Marina Estévez Almenzar, dirigido por
 [Óscar Sánchez Romero](https://www.ugr.es/~ossanche) ([@oscarsanchezromero](https://github.com/oscarsanchezromero)) y [Pedro A. García Sánchez](https://www.ugr.es/~pedro) ([@pedritomelenas](https://github.com/pedritomelenas)).
 
+Este repositorio se puede ejecutar en binder.  
 [![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/ealmenzar/GCM-TFG/master)
 
 ## Resumen
@@ -16,3 +17,5 @@ de estos parámetros, conseguiremos reducir el espacio paramétrico, facilitando
 informático, será necesario desarrollar algoritmos que se adapten al problema. Se nos plantea la búsqueda del mínimo de 
 una función, sin tener asegurada su existencia, en un espacio que inicialmente es infinito. En base a las propiedades 
 del problema habrá que acotar convenientemente el espacio y buscar el mínimo en el mismo de forma eficiente.
+
+En [Tutorial.ipynb](https://github.com/ealmenzar/GCM-TFG/blob/master/Tutorial.ipynb) se describen los ficheros y las respectivas funciones implementadas en este repositorio, así como los tipos y estructuras de datos que usan.
