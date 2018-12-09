@@ -93,12 +93,14 @@ def varphiMin(varphiLim0, varphiLimInf, intinfmin, intsupmin, intervalinf, inter
         Y = []
     s = 0
     nfork = 0
+    cfork = 0
     forkpoints = []
     while s < len(subint) - 1:
         intizq = subint[s]
         intder = subint[s+1]
-        if s == nfork + 1:
+        if cfork == nfork + 1:
             nfork = 0
+            cfork = 0
         M = 1
         lastM = 0
         izqphi, rhoi = phi(np.array([intizq]), galaxdata)
@@ -111,7 +113,6 @@ def varphiMin(varphiLim0, varphiLimInf, intinfmin, intsupmin, intervalinf, inter
             minphi = derphi
             rho = rhod
             minphiX = intder
-        k = 0
         while abs(M - lastM) > tol:
             lastM = M
             IMD = getIMD(intizq, intder, galaxdata)
@@ -147,12 +148,12 @@ def varphiMin(varphiLim0, varphiLimInf, intinfmin, intsupmin, intervalinf, inter
                 minphi = sorted_IMD[0][1]
                 rho = sorted_IMD[0][2]
                 minphiX = sorted_IMD[0][0]
-            k += 1
         if minphi < bestphi:
             bestphi = minphi
             bestrho = rho
             bestphiX = minphiX
         s += 1
+        cfork += 1
         if galaxdata["graphic"]:
             sol = [bestphi, bestrho, bestphiX, X, Y, forkpoints, Xs, intervalinf, intervalsup]
         else:
