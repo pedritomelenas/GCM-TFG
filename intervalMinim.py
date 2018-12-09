@@ -153,7 +153,7 @@ def supConditions(test1, test2, intervalsup, stop, i):
 ##  Comprueba si se da la condición de salto.
 #   param:
 #       twoclosevar: booleano, indica si los dos últimos candidatos están "cerca"
-#       varLimdistance: indica a qué distancia está el valor del límite
+#       varLimdistance: indica a qué distancia está el candidato del valor del límite
 #       interval: candidato a intervalo inferior o superior
 #       direction: dirección de movimiento (-1, 0 o 1)
 #       k: contador de la condición de salto
@@ -200,7 +200,6 @@ def intervalMin(varphiLim0, varphiLimInf, galaxdata):
     intervalinf = -3
     k = 0
     lastint, rho = phi(np.array([float(10 ** intervalinf)]), galaxdata)
-    dir = []
     stop = False
     i = 0.0
 
