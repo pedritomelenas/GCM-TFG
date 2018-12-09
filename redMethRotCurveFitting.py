@@ -7,11 +7,12 @@ from varphiMinim import varphiMin
 import matplotlib.pyplot as plt
 import time
 
-
-## Proceso de ajuste de curvas de rotación:
-## 1) Cálculo de límites
-## 2) Minimización del intervalo de búsqueda
-## 3) Minimización de la función varphi
+'''
+Proceso de ajuste de curvas de rotación:
+    1) Cálculo de límites
+    2) Minimización del intervalo de búsqueda
+    3) Minimización de la función varphi
+'''
 
 galaxdata = {
     "radii": np.array([]),
