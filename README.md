@@ -3,8 +3,7 @@
 Este repositorio contiene el código implementado para el TFG de Marina Estévez Almenzar, dirigido por
 [Óscar Sánchez Romero](https://www.ugr.es/~ossanche) ([@oscarsanchezromero](https://github.com/oscarsanchezromero)) y [Pedro A. García Sánchez](https://www.ugr.es/~pedro) ([@pedritomelenas](https://github.com/pedritomelenas)).
 
-Este repositorio se puede ejecutar en binder.  
-[![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/ealmenzar/GCM-TFG/master)
+Este repositorio tiene un tutorial que se puede ejecutar en binder [![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/ealmenzar/GCM-TFG/master?filepath=Tutorial.ipynb)
 
 ## Resumen
 
