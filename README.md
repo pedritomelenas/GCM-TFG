@@ -18,3 +18,5 @@ una función, sin tener asegurada su existencia, en un espacio que inicialmente 
 del problema habrá que acotar convenientemente el espacio y buscar el mínimo en el mismo de forma eficiente.
 
 En [Tutorial.ipynb](https://github.com/ealmenzar/GCM-TFG/blob/master/Tutorial.ipynb) se describen los ficheros y las respectivas funciones implementadas en este repositorio, así como los tipos y estructuras de datos que usan.
+
+## Poner enlace a la memoria
