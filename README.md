@@ -17,6 +17,4 @@ informático, será necesario desarrollar algoritmos que se adapten al problema.
 una función, sin tener asegurada su existencia, en un espacio que inicialmente es infinito. En base a las propiedades 
 del problema habrá que acotar convenientemente el espacio y buscar el mínimo en el mismo de forma eficiente.
 
-En [Tutorial.ipynb](https://github.com/ealmenzar/GCM-TFG/blob/master/Tutorial.ipynb) se describen los ficheros y las respectivas funciones implementadas en este repositorio, así como los tipos y estructuras de datos que usan.
-
-## Poner enlace a la memoria
+En [Tutorial.ipynb](https://github.com/ealmenzar/GCM-TFG/blob/master/Tutorial.ipynb) se describen los ficheros y las respectivas funciones implementadas en este repositorio, así como los tipos y estructuras de datos que usan. A lo largo del tutorial se hacen referencias a ecuaciones y resultados desarrollados en la memoria de este trabajo, que puede verse en [memoria.pdf](https://github.com/ealmenzar/GCM-TFG/blob/master/memoria.pdf). 
